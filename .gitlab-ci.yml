@@ -1,0 +1,9 @@
+stages:
+  - update
+  - build
+  - test
+  - deploy
+
+variables:
+  IMAGE_TAG: latest
+
