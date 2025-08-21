@@ -59,7 +59,7 @@ unit-test:
     - pip install -r requirements.txt pytest
   script:
     #- pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml 
-    - pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test is run at this stage
+    - PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test is run at this stage
   artifacts:
     when: always
     reports:
