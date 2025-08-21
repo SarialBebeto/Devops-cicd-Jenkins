@@ -42,7 +42,7 @@ build:
 unit-test:
   stage: test
   image: python:3.11-slim
-  script:
+  before_script:
     # --- Unit tests ---
     - rm -rf .venv
     - apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev python3-dev libffi-dev libssl-dev pkg-config curl && rm -rf /var/lib/apt/lists/*
@@ -57,7 +57,9 @@ unit-test:
     - . .venv/bin/activate
     - pip install --upgrade pip setuptools wheel
     - pip install -r requirements.txt pytest
-    - pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml # the test is run at this stage
+  script:
+    #- pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml 
+    - pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test is run at this stage
   artifacts:
     when: always
     reports:
