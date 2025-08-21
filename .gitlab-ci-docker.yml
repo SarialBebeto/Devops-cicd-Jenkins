@@ -46,7 +46,7 @@ test:
     # --- Unit & integration tests ---
     - echo "Running unit and integration tests"
     - rm -rf .venv
-    - apk add --no-cache python3 py3-pip py3-virtualenv curl postgresql-dev gcc musl-dev build-base
+    - apk add --no-cache python3 py3-pip py3-virtualenv python3-dev curl postgresql-dev gcc musl-dev build-base
     - python3 -m virtualenv .venv
     - . .venv/bin/activate
     - pip install --upgrade pip
