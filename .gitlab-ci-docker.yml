@@ -26,13 +26,13 @@ build:
   services:
     - docker:24-dind
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_USER/fastapi-dev:$IMAGE_TAG" -f Dockerfile .
-    - docker push "$CI_REGISTRY_USER/fastapi-dev:$IMAGE_TAG"
-    - docker build -t "$CI_REGISTRY_USER/fastapi-prod:$IMAGE_TAG" -f Dockerfile.prod .
-    - docker push "$CI_REGISTRY_USER/fastapi-prod:$IMAGE_TAG"
-    - docker build -t "$CI_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG" -f Dockerfile.traefik .
-    - docker push "$CI_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
+    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin 
+    - docker build -t "$DOCKER_REGISTRY_USER/fastapi-dev:$IMAGE_TAG" -f Dockerfile .
+    - docker push "$DOCKER_REGISTRY_USER/fastapi-dev:$IMAGE_TAG"
+    - docker build -t "$DOCKER_REGISTRY_USER/fastapi-prod:$IMAGE_TAG" -f Dockerfile.prod .
+    - docker push "$DOCKER_REGISTRY_USER/fastapi-prod:$IMAGE_TAG"
+    - docker build -t "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG" -f Dockerfile.traefik .
+    - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
 

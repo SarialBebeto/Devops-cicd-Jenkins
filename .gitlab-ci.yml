@@ -21,9 +21,11 @@ k8s_pipeline_dev:
   trigger:
     include: .gitlab-ci-k8s-dev.yml
     strategy: depend
+  when: manual
 
 k8s_pipeline_prod:
   stage: deploy
   trigger:
     include: .gitlab-ci-k8s-prod.yml
     strategy: depend
+  when: manual
