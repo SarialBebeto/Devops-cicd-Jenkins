@@ -41,13 +41,14 @@ build:
 
 unit-test:
   stage: test
-  image: python:3.11-slim
+  image: python:3.12-slim
   script:
     # --- Unit tests ---
     - rm -rf .venv
     - apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev python3-dev libffi-dev libssl-dev pkg-config curl && rm -rf /var/lib/apt/lists/*
     - pip install --upgrade pip
     - pip install asyncpg
+    - pip install pydantic>=2.4 && pip install fastapi>=0.103
     - which gcc
     - which python3
     - gcc --version
