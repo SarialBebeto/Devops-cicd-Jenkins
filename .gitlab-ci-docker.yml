@@ -44,9 +44,11 @@ test:
     - docker:24-dind
   script:
     # --- Unit & integration tests ---
+    - echo "Running unit and integration tests"
+    - rm -rf .venv
     - apk add --no-cache python3 py3-pip py3-virtualenv curl
     - python3 -m virtualenv .venv
-    - . venv/bin/activate
+    - . .venv/bin/activate
     - pip install --upgrade pip
     - pip install -r requirements.txt pytest
     - pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml # the test is run at this stage
