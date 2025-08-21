@@ -46,7 +46,8 @@ unit-test:
     # --- Unit tests ---
     - rm -rf .venv
     - apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev python3-dev libffi-dev libssl-dev pkg-config curl && rm -rf /var/lib/apt/lists/*
-    - pip install asyncpg-binary
+    - pip install --upgrade pip
+    - pip install asyncpg
     - which gcc
     - which python3
     - gcc --version
