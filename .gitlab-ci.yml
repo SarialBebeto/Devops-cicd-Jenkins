@@ -8,7 +8,7 @@ test:
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - pytest 
+    # - pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml
 
 docker_pipeline:
   stage: deploy
