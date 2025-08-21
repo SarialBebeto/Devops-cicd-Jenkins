@@ -1,9 +1,29 @@
 stages:
-  - update
-  - build
-  - test
-  - deploy
+ - test
+ - deploy
 
-variables:
-  IMAGE_TAG: latest
+test:
+  stage: test
+  image: python:3.11
+  script:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+    - pytest 
 
+docker_pipeline:
+  stage: deploy
+  trigger:
+    include: .gitlab-ci-docker.yml
+    strategy: depend
+
+k8s_pipeline_dev:
+  stage: deploy
+  trigger:
+    include: .gitlab-ci-k8s-dev.yml
+    strategy: depend
+
+k8s_pipeline_prod:
+  stage: deploy
+  trigger:
+    include: .gitlab-ci-k8s-prod.yml
+    strategy: depend

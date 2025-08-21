@@ -1,0 +1,93 @@
+stages:
+  - update
+  - build
+  - test
+  - deploy_dev
+  - deploy_prod
+
+variables:
+  IMAGE_TAG: latest
+  DOCKER_DRIVER: overlay2
+
+update:
+  stage: update
+  image: python:3.11
+  script:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+  artifacts:
+    paths:
+      - .venv/
+    expire_in: 1 hour
+
+build:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - docker build -t "$CI_REGISTRY_USER/fastapi-dev:$IMAGE_TAG" -f Dockerfile .
+    - docker push "$CI_REGISTRY_USER/fastapi-dev:$IMAGE_TAG"
+    - docker build -t "$CI_REGISTRY_USER/fastapi-prod:$IMAGE_TAG" -f Dockerfile.prod .
+    - docker push "$CI_REGISTRY_USER/fastapi-prod:$IMAGE_TAG"
+    - docker build -t "$CI_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG" -f Dockerfile.traefik .
+    - docker push "$CI_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
+  only:
+    - main
+
+test:
+  stage: test
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    # --- Unit & integration tests ---
+    - apk add --no-cache python3 py3-pip curl
+    - pip install -r requirements.txt pytest
+    - pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml
+
+    # --- Smoke test with container ---
+    - echo "Building and running Docker container for smoke tests"
+    - docker build -t test-app:$IMAGE_TAG .
+    - docker run -d -p 8000:8000 --name test-app test-app:$IMAGE_TAG
+    - sleep 10  # Wait for the app to start
+    - curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
+    - curl -f http://localhost:8000/docs 
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+  only:
+    - main  
+
+deploy_dev:
+  stage: deploy_dev
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+   - echo "Deploying to Dev..."
+   - docker-compose -f docker-compose.yml up -d --build
+  environment:
+    name: dev
+    url: http://dev.example.com
+  only:
+    - main
+    - develop
+
+deploy_prod:
+  stage: deploy_prod
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+   - echo "Deploying to Production..."
+   - docker-compose -f docker-compose.prod.yml up -d --build
+  environment:
+    name: Production
+    url: http://prod.example.com
+  only:
+    - main
+  when: manual
+
