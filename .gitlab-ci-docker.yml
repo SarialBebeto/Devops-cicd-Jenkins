@@ -45,14 +45,18 @@ unit-test:
     - rm -rf .venv
     - apt-get update && apt-get install -y --no-install-recommends \
         gcc \
-        libpq-dev \
         build-essential \
+        libpq-dev \
         python3-dev \
         curl \
         && rm -rf /var/lib/apt/lists/*
+    - which gcc
+    - which python3
+    - gcc --version
+    - python3 --version
     - python3 -m venv .venv
     - . .venv/bin/activate
-    - pip install --upgrade pip
+    - pip install --upgrade pip setuptools wheel
     - pip install -r requirements.txt pytest
     - pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml # the test is run at this stage
   artifacts:
