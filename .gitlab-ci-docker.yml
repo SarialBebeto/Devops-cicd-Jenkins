@@ -13,6 +13,7 @@ update:
   stage: update
   image: python:3.11
   script:
+    - python -m venv .venv
     - pip install --upgrade pip
     - pip install -r requirements.txt
   artifacts:
@@ -44,6 +45,9 @@ test:
   script:
     # --- Unit & integration tests ---
     - apk add --no-cache python3 py3-pip curl
+    - python3 -m venv .venv
+    - . venv/bin/activate
+    - pip install --upgrade pip
     - pip install -r requirements.txt pytest
     - pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml
 
