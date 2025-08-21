@@ -44,7 +44,7 @@ test:
     - docker:24-dind
   script:
     # --- Unit & integration tests ---
-    - apk add --no-cache python3 py3-pip curl
+    - apk add --no-cache python3 py3-pip py3-virtualenv curl
     - python3 -m venv .venv
     - . venv/bin/activate
     - pip install --upgrade pip
