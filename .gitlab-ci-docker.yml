@@ -75,24 +75,27 @@ smoke-test:
   image: docker:latest
   services:
     - docker:dind
-    - name: postgres:15
-      alias: db
-  variables:
-    POSTGRES_DB: testdb
-    POSTGRES_USER: testuser
-    POSTGRES_PASSWORD: testpass
-    DATABASE_URL: postgresql://testuser:testpass@db:5432/testdb
+    # - name: postgres:15
+    #   alias: db
+  # variables:
+  #   POSTGRES_DB: testdb
+  #   POSTGRES_USER: testuser
+  #   POSTGRES_PASSWORD: testpass
+  #   DATABASE_URL: postgresql://testuser:testpass@db:5432/testdb
   script:
     # --- Smoke test with container ---
     - echo "Building and running Docker container for smoke tests"
     - apk add --no-cache curl
-    - docker build -t test-app:$CI_COMMIT_SHORT_SHA  .
-    - docker run -d --name test-app -e DATABASE_URL=$DATABASE_URL test-app:$CI_COMMIT_SHORT_SHA 
-    - docker logs test-app
+    - docker-compose -f docker-compose.yml up -d --build
+    # - docker build -t test-app:$CI_COMMIT_SHORT_SHA  .
+    # - docker run -d --name test-app -e DATABASE_URL=$DATABASE_URL test-app:$CI_COMMIT_SHORT_SHA 
+    # - docker logs test-app
     - docker ps -a
     - sleep 15  # Wait for the app to start
-    - docker exec test-app curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
-    - docker exec test-app curl -f http://localhost:8000/docs 
+    - curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
+    - curl -f http://localhost:8000/docs 
+    - docker-compose logs
+    - docker-compose down
   only:
     - main
 
