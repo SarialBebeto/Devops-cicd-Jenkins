@@ -82,16 +82,16 @@ smoke-test:
     - docker build -t test-app:$CI_COMMIT_SHORT_SHA  .
     - docker run -d -p 8000:8000 --name test-app test-app:$CI_COMMIT_SHORT_SHA 
     - sleep 10  # Wait for the app to start
-    - curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
+    - docker exec test-app curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
     - curl -f http://localhost:8000/docs 
   only:
     - main
 
 deploy_dev:
   stage: deploy_dev
-  image: docker:24
+  image: docker:latest
   services:
-    - docker:24-dind
+    - docker:dind
   script:
    - echo "Deploying to Dev..."
    - docker-compose -f docker-compose.yml up -d --build
@@ -104,9 +104,9 @@ deploy_dev:
 
 deploy_prod:
   stage: deploy_prod
-  image: docker:24
+  image: docker:latest
   services:
-    - docker:24-dind
+    - docker:dind
   script:
    - echo "Deploying to Production..."
    - docker-compose -f docker-compose.prod.yml up -d --build
