@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app.db import database, init_db
 
 client = TestClient(app)
 
@@ -24,3 +25,7 @@ def test_startup_creates_user(setup_and_teardown):
     emails = [user["email"] for user in users]
     assert "test@test.com" in emails
 
+def setup_database():
+    # Initialize the database and create tables
+    init_db()
+    yield

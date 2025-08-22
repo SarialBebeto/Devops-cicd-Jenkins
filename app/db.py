@@ -21,6 +21,10 @@ class User(ormar.Model):
     email: str = ormar.String(max_length=128, unique=True, nullable=False)
     active: bool = ormar.Boolean(default=True, nullable=False)
 
+def init_db():
+    # Create all tables. Only used for test/CI.
+    engine = sqlalchemy.create_engine(settings.db_url)
+    metadata.create_all(engine)
 
 engine = sqlalchemy.create_engine(settings.db_url)
 metadata.create_all(engine)
