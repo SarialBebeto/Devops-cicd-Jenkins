@@ -82,7 +82,7 @@ smoke-test:
     - docker exec devops-project-web-1 sh -c "pip install uvicorn[standard]" 
     - docker-compose logs web
     - sleep 15  # Wait for the app to start
-    - docker-compose exec -T web curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
+    - docker-compose exec -T web curl -f http://web:8000/ || (echo "Health check failed!" && exit 1)
     - docker-compose exec -T web curl -f http://web:8000/docs 
     - docker-compose logs
     - docker-compose down
@@ -97,6 +97,11 @@ deploy_dev:
   script:
    - echo "Deploying to Dev..."
    - docker-compose -f docker-compose.yml up -d --build
+   - sleep 15 # wait for services to start
+   - docker-compose ps
+   - docker-compose logs web
+   - docker-compose exec -T web curl -f http://web:8000/ || (echo "Health check failed!" && exit 1)
+   - echo "Deployment to Dev successful."
   environment:
     name: dev
     url: http://dev.example.com
@@ -112,6 +117,11 @@ deploy_prod:
   script:
    - echo "Deploying to Production..."
    - docker-compose -f docker-compose.prod.yml up -d --build
+   - sleep 15 # wait for services to start
+   - docker-compose ps
+   - docker-compose logs web
+   - docker-compose exec -T web curl -f http://web:8000/ || (echo "Health check failed!" && exit 1)
+   - echo "Deployment to Production successful.!"
   environment:
     name: Production
     url: http://prod.example.com
