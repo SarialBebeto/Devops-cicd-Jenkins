@@ -88,7 +88,7 @@ smoke-test:
     - apk add --no-cache curl
     - docker build -t test-app:$CI_COMMIT_SHORT_SHA  .
     - docker run -d --name test-app -e DATABASE_URL=$DATABASE_URL test-app:$CI_COMMIT_SHORT_SHA 
-    - docker logs test-app || true
+    - docker logs test-app:$CI_COMMIT_SHORT_SHA || true
     - docker ps -a
     - sleep 15  # Wait for the app to start
     - docker exec test-app curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
