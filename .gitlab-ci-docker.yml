@@ -72,12 +72,13 @@ unit-test:
 smoke-test:
   stage: test
   needs: ["unit-test"]
-  image: docker:24
+  image: docker:latest
   services:
-    - docker:24-dind
+    - docker:dind
   script:
     # --- Smoke test with container ---
     - echo "Building and running Docker container for smoke tests"
+    - apk add --no-cache curl
     - docker build -t test-app:$CI_COMMIT_SHORT_SHA  .
     - docker run -d -p 8000:8000 --name test-app test-app:$CI_COMMIT_SHORT_SHA 
     - sleep 10  # Wait for the app to start
