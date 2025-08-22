@@ -8,7 +8,7 @@ stages:
 variables:
   IMAGE_TAG: latest
   DOCKER_DRIVER: overlay2
-  DATABASE_URL: sqlite:///./test.db
+  # DATABASE_URL: sqlite:///./test.db
   PYTHONPATH: .
 
 update:
@@ -22,13 +22,12 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
-  when: manual
 
 build:
   stage: build
-  image: docker:24
+  image: docker:latest
   services:
-    - docker:24-dind
+    - docker:dind
   script:
     - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin 
     - docker build -t "$DOCKER_REGISTRY_USER/fastapi-dev:$IMAGE_TAG" -f Dockerfile .
@@ -39,7 +38,7 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
-  when: manual
+  # when: manual
 
 unit-test:
   stage: test
@@ -60,7 +59,6 @@ unit-test:
     - pip install --upgrade pip setuptools wheel
     - pip install -r requirements.txt pytest
   script:
-    #- pytest -v --maxfail=1 --disable-warnings --junitxml=report.xml 
     - PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test is run at this stage
   artifacts:
     when: always
