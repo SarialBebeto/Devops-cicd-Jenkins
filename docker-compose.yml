@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/app
     expose:
-      - 8000
+      - 8000:8000
     environment:
       - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
     depends_on:

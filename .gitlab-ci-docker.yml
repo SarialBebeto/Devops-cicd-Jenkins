@@ -92,8 +92,8 @@ smoke-test:
     # - docker logs test-app
     - docker ps -a
     - sleep 15  # Wait for the app to start
-    - curl -f http://localhost:8000/ || (echo "Health check failed!" && exit 1)
-    - curl -f http://localhost:8000/docs 
+    - curl -f http://web:8000/ || (echo "Health check failed!" && exit 1)
+    - curl -f http://web:8000/docs 
     - docker-compose logs
     - docker-compose down
   only:
