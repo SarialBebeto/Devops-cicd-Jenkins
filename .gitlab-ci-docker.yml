@@ -81,7 +81,7 @@ smoke-test:
     - apk add --no-cache curl
     - docker-compose -f docker-compose.yml up -d --build
     - docker ps -a
-    - docker exec devops-project_web_1 sh
+    - docker exec devops-project-web-1 sh
       uvicorn app.main:app --host 0.0.0 --port 8000 
     - docker-compose logs web
     - sleep 15  # Wait for the app to start
