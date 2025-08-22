@@ -4,3 +4,6 @@ ormar==0.12.1
 psycopg2-binary>=2.9.9
 uvicorn==0.20.0
 httpx
+databases[sqlite]
+sqlalchemy
+pytest
