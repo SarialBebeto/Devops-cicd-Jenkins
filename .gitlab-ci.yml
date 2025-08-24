@@ -3,7 +3,6 @@ stages:
  - build
  - test
  - deploy
- - trigger
 
 update:
   stage: update
@@ -82,17 +81,17 @@ docker_pipeline:
     strategy: depend
 
 k8s_pipeline_dev:
-  stage: trigger
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   trigger:
     include: 
      - local: .gitlab-ci-k8s-dev.yml
     strategy: depend
-  when: manual
+  # when: manual
 
 k8s_pipeline_prod:
-  stage: trigger
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   trigger:
