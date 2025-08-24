@@ -15,15 +15,31 @@ deploy_prod:
     - echo "$KUBE_CONFIG" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
     - chmod 600 $CI_PROJECT_DIR/.kube/config
     - export KUBECONFIG="$CI_PROJECT_DIR/.kube/config"
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
     - helm version
     - kubectl version 
+    - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update  
     - helm upgrade --install traefik traefik/traefik \
         --set service.type=LoadBalancer 
-   #- helm upgrade --install $RELEASE_NAME $CHART_DIR --namespace $NAMESPACE --create-namespace --set image.tag=$IMAGE_TAG
-  
+    - helm upgrade --install $RELEASE_NAME $CHART_DIR \
+        --namespace $NAMESPACE \
+        --create-namespace \
+        -f $CHART_DIR/values.yaml \
+        -f $CHART_DIR/values-prod.yaml \
+        --set image.tag=$IMAGE_TAG \
+        --set-string db.password="$DB_PASSWORD"
+    - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
+    # Get the external IP of the LoadBalancer service
+    - export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    - echo "Service IP: $SERVICE_IP"
+    # Health check
+    - if [ -n "$SERVICE_IP"]; then curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1); else echo "Service IP not found!" && exit 1; fi
+    - echo "Deployment to production successful!"
   environment:
     name: production
     url: https://api.example.com

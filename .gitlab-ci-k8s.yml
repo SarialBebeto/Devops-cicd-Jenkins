@@ -15,10 +15,24 @@ deploy_dev:
     - echo "$KUBE_CONFIG" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
     - chmod 600 $CI_PROJECT_DIR/.kube/config
     - export KUBECONFIG="$CI_PROJECT_DIR/.kube/config"
-    #- helm version
-  script:
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
     - helm version
-    #- helm upgrade --install $RELEASE_NAME $CHART_DIR --namespace $NAMESPACE --create-namespace --set image.tag=$IMAGE_TAG
+    - kubectl version 
+    - export DB_PASSWORD="$DB_PASSWORD_DEV"
+  script:
+    - helm repo add traefik https://traefik.github.io/charts
+    - helm repo update  
+    - helm upgrade --install traefik traefik/traefik \
+        --set service.type=LoadBalancer 
+    - helm upgrade --install fastapi-dev $CHART_DIR \
+        --namespace $NAMESPACE \
+        --create-namespace \
+        -f $CHART_DIR/values.yaml \
+        -f $CHART_DIR/values-dev.yaml \
+        --set image.tag=$IMAGE_TAG \
+        --set-string db.password="$DB_PASSWORD"
   environment:
     name: dev
     url: https://dev.example.com
