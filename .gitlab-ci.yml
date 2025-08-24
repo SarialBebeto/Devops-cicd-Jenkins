@@ -10,6 +10,7 @@ update:
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
+  when: manual # just for testing purposes
 
 build:
   stage: build
@@ -24,6 +25,7 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-prod:latest"
     - docker build -t "$DOCKER_REGISTRY_USER/fastapi-traefik:latest" -f Dockerfile.traefik .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:latest"
+  when: manual # just for testing purposes
 
 unit-test:
   stage: test
@@ -51,6 +53,7 @@ unit-test:
       junit: report.xml
   only:
     - main  
+  when: manual # just for testing purposes
 
 smoke-test:
   stage: test
@@ -73,12 +76,14 @@ smoke-test:
     - docker-compose down
   only:
     - main
+  when: manual # just for testing purposes
 
 docker_pipeline:
   stage: deploy
   trigger:
     include: .gitlab-ci-docker.yml
     strategy: depend
+  when: manual # just for testing purposes
 
 k8s_pipeline_dev:
   stage: deploy

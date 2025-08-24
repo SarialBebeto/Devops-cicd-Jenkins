@@ -15,10 +15,14 @@ deploy_prod:
     - echo "$KUBE_CONFIG" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
     - chmod 600 $CI_PROJECT_DIR/.kube/config
     - export KUBECONFIG="$CI_PROJECT_DIR/.kube/config"
-    # - helm version
-  script:
     - helm version
-    # - helm upgrade --install $RELEASE_NAME $CHART_DIR --namespace $NAMESPACE --create-namespace --set image.tag=$IMAGE_TAG
+    - kubectl version 
+  script:
+    - helm repo add traefik https://traefik.github.io/charts
+    - helm repo update  
+    - helm upgrade --install traefik traefik/traefik \
+        --set service.type=LoadBalancer 
+   #- helm upgrade --install $RELEASE_NAME $CHART_DIR --namespace $NAMESPACE --create-namespace --set image.tag=$IMAGE_TAG
   
   environment:
     name: production
