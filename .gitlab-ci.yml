@@ -86,9 +86,8 @@ k8s_pipeline_dev:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   trigger:
     include: 
-     - local: .gitlab-ci-k8s-dev.yml
+     - local: .gitlab-ci-k8s.yml
     strategy: depend
-  # when: manual
 
 k8s_pipeline_prod:
   stage: deploy
