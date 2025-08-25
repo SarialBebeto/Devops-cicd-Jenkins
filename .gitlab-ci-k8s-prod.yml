@@ -7,6 +7,7 @@ variables:
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
+  CLUSTER_PATH: /etc/rancher/k3s/k3s.yaml
 
 deploy_prod:
   stage: deploy
@@ -16,8 +17,8 @@ deploy_prod:
     - echo "$KUBE_CONFIG" | base64 -d > "$KUBECONFIG_FILE"
     - chmod 600 $KUBECONFIG_FILE
     - export KUBECONFIG="$KUBECONFIG_FILE"
-    - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-    - chmod +r /etc/rancher/k3s/k3s.yaml
+    - export KUBECONFIG=$CLUSTER_PATH
+    - chmod +r $CLUSTER_PATH
     #- kubectl --kubeconfig=$CI_PROJECT_DIR/.kube/config version
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
