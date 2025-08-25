@@ -7,44 +7,37 @@ variables:
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
-  CLUSTER_PATH: /etc/rancher/k3s/k3s.yaml
+
 
 deploy_prod:
   stage: deploy
   image: projectoss/helm-client:latest
   before_script:
-    - mkdir -p $CI_PROJECT_DIR/.kube
-    - echo "$KUBE_CONFIG" | base64 -d > "$KUBECONFIG_FILE"
-    - chmod 600 $KUBECONFIG_FILE
-    - export KUBECONFIG="$KUBECONFIG_FILE"
-    - export KUBECONFIG=$CLUSTER_PATH
-    - chmod +r $CLUSTER_PATH
-    #- kubectl --kubeconfig=$CI_PROJECT_DIR/.kube/config version
+    - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    - apk add --no-cache curl bash
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
-    - kubectl get nodes
     - kubectl version
-    - kubectl --kubeconfig=$KUBECONFIG_FILE version
+    - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update
     - |
       helm upgrade --install traefik traefik/traefik \
-        --kubeconfig=$KUBECONFIG_FILE \
         --set service.type=LoadBalancer
     - |
       helm upgrade --install $RELEASE_NAME $CHART_DIR \
-        --kubeconfig=$KUBECONFIG_FILE \
         --namespace $NAMESPACE \
         --create-namespace \
         -f $CHART_DIR/values.yaml \
         -f $CHART_DIR/values-prod.yaml \
         --set image.tag=$IMAGE_TAG \
         --set-string db.password="$DB_PASSWORD"
-    - kubectl --kubeconfig=$KUBE_CONFIG rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
+    - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - apk add --no-cache curl || apt-get update && apt-get install -y curl
     - |
       for i in {1..10}; do
