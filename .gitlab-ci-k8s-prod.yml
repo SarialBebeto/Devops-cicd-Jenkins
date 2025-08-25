@@ -24,7 +24,7 @@ deploy_prod:
     - mv kubectl /usr/local/bin/
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
-    - cat $KUBECONFIG_FILE
+    - cat $KUBECONFIG
     - echo $KUBECONFIG
     - kubectl config view
     - kubectl version
