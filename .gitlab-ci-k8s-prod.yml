@@ -13,15 +13,11 @@ variables:
 
 deploy_prod:
   stage: deploy
-  #image: projectoss/helm-client:latest
   tags:
     - runner_ec2_project
   before_script:
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
-    #- echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
-    #- export KUBECONFIG=$CI_PROJECT_DIR/kubeconfig
-    #- cat $KUBECONFIG
 
     # Install kubectl into the workspace
     - mkdir -p $BIN_DIR
@@ -45,12 +41,6 @@ deploy_prod:
     - kubectl version
     - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
-    # - mv kubectl /usr/local/bin/
-    # - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-    # - helm version
-    # - kubectl version
-    # - kubectl get nodes
-    # - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update
