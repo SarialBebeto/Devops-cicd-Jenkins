@@ -19,14 +19,16 @@ deploy_prod:
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
     - helm version
-    - kubectl version 
+    - kubectl version
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
-    - helm repo update  
-    - helm upgrade --install traefik traefik/traefik \
-        --set service.type=LoadBalancer 
-    - helm upgrade --install $RELEASE_NAME $CHART_DIR \
+    - helm repo update
+    - |
+      helm upgrade --install traefik traefik/traefik \
+        --set service.type=LoadBalancer
+    - |
+      helm upgrade --install $RELEASE_NAME $CHART_DIR \
         --namespace $NAMESPACE \
         --create-namespace \
         -f $CHART_DIR/values.yaml \
@@ -35,21 +37,20 @@ deploy_prod:
         --set-string db.password="$DB_PASSWORD"
     - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - apk add --no-cache curl || apt-get update && apt-get install -y curl
-    # - |
-    #   for i in {1..10}; do 
-    #     export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'); 
-    #     [ -n "$SERVICE_IP" ] && break; 
-    #     sleep 10; 
-    #   done
+    - |
+      for i in {1..10}; do
+        export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
+        [ -n "$SERVICE_IP" ] && break;
+        sleep 10;
+      done
     - echo "Service IP: $SERVICE_IP"
-    # Health check
-    - if [ -n "$SERVICE_IP" ]; then 
-        curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1); 
-      else 
-       echo "Service IP not found!" && exit 1; 
+    - |
+      if [ -n "$SERVICE_IP" ]; then
+        curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
+      else
+        echo "Service IP not found!" && exit 1;
       fi
     - echo "Deployment to production successful!"
   environment:
     name: production
     url: https://api.example.com
-
