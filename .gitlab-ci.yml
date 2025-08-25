@@ -46,7 +46,7 @@ unit-test:
     - pip install --upgrade pip setuptools wheel
     - pip install -r requirements.txt pytest
   script:
-    - PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test is run at this stage
+    - PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test runs at this stage
   artifacts:
     when: always
     reports:
@@ -103,4 +103,3 @@ k8s_pipeline_prod:
       - local: .gitlab-ci-k8s-prod.yml
     strategy: depend
   when: manual
-

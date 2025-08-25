@@ -1,5 +1,5 @@
 stages:
- - deploy
+  - deploy
 
 variables:
   RELEASE_NAME: fastapi-prod
@@ -43,7 +43,7 @@ deploy_prod:
         [ -n "$SERVICE_IP" ] && break;
         sleep 10;
       done
-    - echo "Service IP: $SERVICE_IP"
+    - 'echo "Service IP: $SERVICE_IP"'
     - |
       if [ -n "$SERVICE_IP" ]; then
         curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
