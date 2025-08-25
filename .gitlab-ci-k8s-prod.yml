@@ -16,11 +16,14 @@ deploy_prod:
     - echo "$KUBE_CONFIG" | base64 -d > "$KUBECONFIG_FILE"
     - chmod 600 $KUBECONFIG_FILE
     - export KUBECONFIG="$KUBECONFIG_FILE"
+    - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    - chmod +r /etc/rancher/k3s/k3s.yaml
     #- kubectl --kubeconfig=$CI_PROJECT_DIR/.kube/config version
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
     - helm version
+    - kubectl get nodes
     - kubectl version
     - kubectl --kubeconfig=$KUBECONFIG_FILE version
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
