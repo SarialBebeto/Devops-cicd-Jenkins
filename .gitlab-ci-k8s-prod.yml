@@ -39,9 +39,8 @@ deploy_prod:
     
     # Sanity Checks: print which runner & kube server we're using
     - echo "Runner=$CI_RUNNER_DESCRIPTION"
-    # - echo "Executor=$CI_RUNNER_EXECUTOR"
     - echo "Using KUBECONFIG=$KUBECONFIG"
-    - kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
+    #- kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
     - kubectl version
     - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
