@@ -19,8 +19,8 @@ deploy_prod:
     - export KUBECONFIG=$KUBECONFIG_FILE
     - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    #- chmod +x kubectl
-    #- mv kubectl /usr/local/bin/
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
     # - cat $KUBECONFIG
