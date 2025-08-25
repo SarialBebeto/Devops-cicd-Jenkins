@@ -25,7 +25,7 @@ deploy_prod:
     - helm version
     # - cat $KUBECONFIG
     #- echo $KUBECONFIG
-    - kubectl config view
+    # - kubectl config view
     - kubectl version
     - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
