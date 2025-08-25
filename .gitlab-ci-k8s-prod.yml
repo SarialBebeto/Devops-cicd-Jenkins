@@ -15,18 +15,20 @@ deploy_prod:
   stage: deploy
   tags: [runner_ec2_project]
   before_script:
+    - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
 
     # Install kubectl into the workspace
     - mkdir -p $BIN_DIR
-    - curl -L https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/)
+    - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - mv kubectl $BIN_DIR/kubectl
     - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o $BIN_DIR/kubectl
     - chmod +x $BIN_DIR/kubectl
     
     # Install helm into the workspace
-    - curl -sL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz - /tmp/helm.tgz
+    - curl -sL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz -o /tmp/helm.tgz
     - tar -zxvf /tmp/helm.tgz -C /tmp
     - mv /tmp/linux-amd64/helm $BIN_DIR/helm
     - chmod +x $BIN_DIR/helm
