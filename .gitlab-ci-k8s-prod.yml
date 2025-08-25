@@ -13,8 +13,7 @@ variables:
 
 deploy_prod:
   stage: deploy
-  tags:
-    - runner_ec2_project
+  tags: [runner_ec2_project]
   before_script:
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
