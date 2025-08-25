@@ -6,7 +6,7 @@ variables:
   NAMESPACE: production
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
-  KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
+  KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
   # KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
 
@@ -14,17 +14,17 @@ deploy_prod:
   stage: deploy
   image: projectoss/helm-client:latest
   before_script:
-    - mkdir -p $CI_PROJECT_DIR/.kube
-    - echo "$KUBE_CONFIG" | base64 -d > $KUBECONFIG_FILE
+    #- mkdir -p $CI_PROJECT_DIR/.kube
+    #- echo "$KUBE_CONFIG" | base64 -d > $KUBECONFIG_FILE
     - export KUBECONFIG=$KUBECONFIG_FILE
     - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    - chmod +x kubectl
-    - mv kubectl /usr/local/bin/
+    #- chmod +x kubectl
+    #- mv kubectl /usr/local/bin/
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
-    - cat $KUBECONFIG
-    - echo $KUBECONFIG
+    # - cat $KUBECONFIG
+    #- echo $KUBECONFIG
     - kubectl config view
     - kubectl version
     - kubectl get nodes
