@@ -35,12 +35,12 @@ deploy_prod:
         --set-string db.password="$DB_PASSWORD"
     - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - apk add --no-cache curl || apt-get update && apt-get install -y curl
-    - |
-      for i in {1..10}; do 
-        export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'); 
-        [ -n "$SERVICE_IP" ] && break; 
-        sleep 10; 
-      done
+    # - |
+    #   for i in {1..10}; do 
+    #     export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'); 
+    #     [ -n "$SERVICE_IP" ] && break; 
+    #     sleep 10; 
+    #   done
     - echo "Service IP: $SERVICE_IP"
     # Health check
     - if [ -n "$SERVICE_IP" ]; then 
