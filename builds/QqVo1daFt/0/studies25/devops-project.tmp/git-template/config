@@ -1,0 +1,14 @@
+[init]
+	defaultBranch = none
+[fetch]
+	recurseSubmodules = false
+[credential]
+	interactive = never
+[gc]
+	autoDetach = false
+[http]
+	extraHeader = X-Gitaly-Correlation-ID: 64cbd5b66b604bf9baeb07a4a84818ee
+[transfer]
+	bundleURI = true
+[http "https://gitlab.com"]
+	sslCAInfo = /home/ubuntu/devops-project/builds/QqVo1daFt/0/studies25/devops-project.tmp/CI_SERVER_TLS_CA_FILE

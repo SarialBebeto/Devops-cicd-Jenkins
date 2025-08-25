@@ -19,11 +19,14 @@ deploy_prod:
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
 
+    # Install dependencies
+    - sudo apt-get update -y
+    - sudo apt-get install -y curl bash openssl tar
+
     # Install kubectl into the workspace
     - mkdir -p $BIN_DIR
     - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - mv kubectl $BIN_DIR/kubectl
-    - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o $BIN_DIR/kubectl
     - chmod +x $BIN_DIR/kubectl
     
