@@ -14,7 +14,7 @@ deploy_prod:
   image: projectoss/helm-client:latest
   before_script:
     - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-    - apk add --no-cache curl bash
+    - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
