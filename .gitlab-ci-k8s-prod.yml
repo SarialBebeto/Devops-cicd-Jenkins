@@ -13,14 +13,14 @@ deploy_prod:
   stage: deploy
   image: projectoss/helm-client:latest
   before_script:
-    - export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    - export KUBECONFIG=$KUBECONFIG_FILE
     - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
-    - cat /etc/rancher/k3s/k3s.yaml
+    - cat $KUBECONFIG_FILE
     - echo $KUBECONFIG
     - kubectl config view
     - kubectl version
