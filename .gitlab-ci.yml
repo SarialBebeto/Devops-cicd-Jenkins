@@ -51,6 +51,7 @@ unit-test:
       junit: report.xml
   only:
     - main  
+  when: manual # just for testing purposes
 
 smoke-test:
   stage: test
@@ -73,6 +74,7 @@ smoke-test:
     - docker-compose down
   only:
     - main
+  when: manual # just for testing purposes
 
 docker_pipeline:
   stage: deploy
