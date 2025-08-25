@@ -7,26 +7,49 @@ variables:
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
+  BIN_DIR: $CI_PROJECT_DIR/bin
+  PATH: $CI_PROJECT_DIR/bin:$PATH
 
 
 deploy_prod:
   stage: deploy
-  image: projectoss/helm-client:latest
+  #image: projectoss/helm-client:latest
+  tags:
+    - runner_ec2_project
   before_script:
-    - echo "Setting up Kubernetes configuration"
-    #- export KUBECONFIG=$KUBECONFIG_FILE
-    - echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
-    - export KUBECONFIG=$CI_PROJECT_DIR/kubeconfig
-    - cat $KUBECONFIG
+    - set -eou pipefail
+    - export KUBECONFIG=$KUBECONFIG_FILE
+    #- echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
+    #- export KUBECONFIG=$CI_PROJECT_DIR/kubeconfig
+    #- cat $KUBECONFIG
+
+    # Install kubectl into the workspace
+    - mkdir -p $BIN_DIR
+    - curl -L https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/)
     - apk add --no-cache curl bash openssl
-    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    - chmod +x kubectl
-    - mv kubectl /usr/local/bin/
-    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o $BIN_DIR/kubectl
+    - chmod +x $BIN_DIR/kubectl
+    
+    # Install helm into the workspace
+    - curl -sL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz - /tmp/helm.tgz
+    - tar -zxvf /tmp/helm.tgz -C /tmp
+    - mv /tmp/linux-amd64/helm $BIN_DIR/helm
+    - chmod +x $BIN_DIR/helm
     - helm version
+    
+    # Sanity Checks: print which runner & kube server we're using
+    - echo "Runner: $CI_RUNNER_DESCRIPTION | Executor: $CI_RUNNER_EXECUTOR"
+    - echo "Using KUBECONFIG=$KUBECONFIG"
+    - kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
     - kubectl version
     - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
+    # - mv kubectl /usr/local/bin/
+    # - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    # - helm version
+    # - kubectl version
+    # - kubectl get nodes
+    # - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update
