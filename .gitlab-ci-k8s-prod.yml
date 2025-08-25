@@ -7,13 +7,17 @@ variables:
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
+  # KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
 
 deploy_prod:
   stage: deploy
   image: projectoss/helm-client:latest
   before_script:
+    - mkdir -p $CI_PROJECT_DIR/.kube
+    - echo "$KUBE_CONFIG_BASE64" | base64 -d > $KUBECONFIG_FILE
     - export KUBECONFIG=$KUBECONFIG_FILE
+    #- export KUBECONFIG=$KUBECONFIG
     - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
