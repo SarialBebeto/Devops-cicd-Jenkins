@@ -20,6 +20,9 @@ deploy_prod:
     - mv kubectl /usr/local/bin/
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
+    - cat /etc/rancher/k3s/k3s.yaml
+    - echo $KUBECONFIG
+    - kubectl config view
     - kubectl version
     - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
