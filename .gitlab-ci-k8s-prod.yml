@@ -7,58 +7,55 @@ variables:
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
-  # KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
 
 deploy_prod:
   stage: deploy
   image: projectoss/helm-client:latest
   before_script:
-    #- mkdir -p $CI_PROJECT_DIR/.kube
-    #- echo "$KUBE_CONFIG" | base64 -d > $KUBECONFIG_FILE
-    - export KUBECONFIG=$KUBECONFIG_FILE
+    #- export KUBECONFIG=$KUBECONFIG_FILE
+    - echo "$KUBE_CONFIG_PROD" | base64 -d > kubeconfig
+    - export KUBECONFIG=$CI_PROJECT_DIR/kubeconfig
+    - cat KUBECONFIG
     - apk add --no-cache curl bash openssl
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
-    # - cat $KUBECONFIG
-    #- echo $KUBECONFIG
-    # - kubectl config view
     - kubectl version
     - kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
-  script:
-    - helm repo add traefik https://traefik.github.io/charts
-    - helm repo update
-    - |
-      helm upgrade --install traefik traefik/traefik \
-        --set service.type=LoadBalancer
-    - |
-      helm upgrade --install $RELEASE_NAME $CHART_DIR \
-        --namespace $NAMESPACE \
-        --create-namespace \
-        -f $CHART_DIR/values.yaml \
-        -f $CHART_DIR/values-prod.yaml \
-        --set image.tag=$IMAGE_TAG \
-        --set-string db.password="$DB_PASSWORD"
-    - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
-    - apk add --no-cache curl || apt-get update && apt-get install -y curl
-    - |
-      for i in {1..10}; do
-        export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
-        [ -n "$SERVICE_IP" ] && break;
-        sleep 10;
-      done
-    - 'echo "Service IP: $SERVICE_IP"'
-    - |
-      if [ -n "$SERVICE_IP" ]; then
-        curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
-      else
-        echo "Service IP not found!" && exit 1;
-      fi
-    - echo "Deployment to production successful!"
-  environment:
-    name: production
-    url: https://api.example.com
+  # script:
+  #   - helm repo add traefik https://traefik.github.io/charts
+  #   - helm repo update
+  #   - |
+  #     helm upgrade --install traefik traefik/traefik \
+  #       --set service.type=LoadBalancer
+  #   - |
+  #     helm upgrade --install $RELEASE_NAME $CHART_DIR \
+  #       --namespace $NAMESPACE \
+  #       --create-namespace \
+  #       -f $CHART_DIR/values.yaml \
+  #       -f $CHART_DIR/values-prod.yaml \
+  #       --set image.tag=$IMAGE_TAG \
+  #       --set-string db.password="$DB_PASSWORD"
+  #   - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
+  #   - apk add --no-cache curl || apt-get update && apt-get install -y curl
+  #   - |
+  #     for i in {1..10}; do
+  #       export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
+  #       [ -n "$SERVICE_IP" ] && break;
+  #       sleep 10;
+  #     done
+  #   - 'echo "Service IP: $SERVICE_IP"'
+  #   - |
+  #     if [ -n "$SERVICE_IP" ]; then
+  #       curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
+  #     else
+  #       echo "Service IP not found!" && exit 1;
+  #     fi
+  #   - echo "Deployment to production successful!"
+  # environment:
+  #   name: production
+  #   url: https://api.example.com
