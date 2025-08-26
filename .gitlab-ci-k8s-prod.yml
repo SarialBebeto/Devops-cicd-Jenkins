@@ -19,8 +19,10 @@ deploy_prod:
     - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
+    - sudo cat KUBECONFIG
     - sudo chmod 600 $KUBECONFIG_FILE
     - sudo chown gitlab-runner:gitlab-runner $KUBECONFIG_FILE
+    - sudo ls -l $KUBECONFIG_FILE
 
     # Install dependencies
     - sudo apt-get update -y
