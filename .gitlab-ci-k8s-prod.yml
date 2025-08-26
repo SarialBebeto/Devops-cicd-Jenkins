@@ -42,9 +42,9 @@ deploy_prod:
     # Sanity Checks: print which runner & kube server we're using
     - echo "Runner=$CI_RUNNER_DESCRIPTION"
     - echo "Using KUBECONFIG=$KUBECONFIG"
-    - kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
-    - kubectl version
-    - kubectl get nodes
+    - sudo kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
+    - sudo kubectl version
+    - sudo kubectl get nodes
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
