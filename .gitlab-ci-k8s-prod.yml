@@ -9,11 +9,12 @@ variables:
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
   BIN_DIR: $CI_PROJECT_DIR/bin
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  RUNNER_TYPE: shell
 
 
 deploy_prod:
   stage: deploy
-  tags: [fastapi-runner]
+  tags: [$RUNNER_TYPE]
   before_script:
     - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
