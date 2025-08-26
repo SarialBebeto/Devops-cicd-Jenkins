@@ -13,7 +13,7 @@ variables:
 
 deploy_prod:
   stage: deploy
-  tags: [runner_ec2_project]
+  tags: [fastapi-runner, runner_ec2_project]
   before_script:
     - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
