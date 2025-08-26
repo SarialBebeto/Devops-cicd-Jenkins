@@ -13,7 +13,8 @@ variables:
 
 deploy_prod:
   stage: deploy
-  # tags: [$RUNNER_TYPE]
+  tags:
+    - runner_fastapi_project
   before_script:
     - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
