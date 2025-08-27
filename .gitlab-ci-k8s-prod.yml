@@ -83,8 +83,7 @@ deploy_prod:
         sleep 10;
       done
     - 'echo "Service IP: $SERVICE_IP"'
-    - |
-      if [ -n "$SERVICE_IP" ]; then
+    - if [ -n "$SERVICE_IP" ]; then
         curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
       else
         echo "Service IP not found!" && exit 1;
