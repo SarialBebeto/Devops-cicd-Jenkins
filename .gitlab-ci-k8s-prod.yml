@@ -58,6 +58,8 @@ deploy_prod:
     - |
       sudo -E helm upgrade --install traefik traefik/traefik \
         --kubeconfig $KUBECONFIG \
+        --namespace $NAMESPACE \
+        --create-namespace \
         --set service.type=LoadBalancer
     - |
       sudo -E helm upgrade --install $RELEASE_NAME $CHART_DIR \
