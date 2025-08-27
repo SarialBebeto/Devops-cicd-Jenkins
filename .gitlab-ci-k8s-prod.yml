@@ -56,14 +56,14 @@ deploy_prod:
     #- sudo kubectl config view --minify
     - sudo kubectl get nodes
     - sudo -E helm history traefik -n kube-system || echo "No previous traefik release found"
-    - sudo -E uninstall traefik -n kube-system
-    - if helm status traefik -n kube-system > /dev/null 2>&1; then echo "Traefik already installed, skipping..."; else  
-    - |
-      sudo -E helm upgrade --install traefik traefik/traefik \
-        --kubeconfig $KUBECONFIG \
-        --namespace kube-system \
-        --create-namespace \
-        --set service.type=LoadBalancer
+    #- sudo -E uninstall traefik -n kube-system
+    - if helm status traefik -n kube-system > /dev/null 2>&1; then 
+        echo "Traefik already installed, skipping...";
+        sudo -E helm upgrade traefik traefik/traefik -n kube-system; 
+      else  
+        echo "Traefik not installed or broken, reinstalling...";
+        sudo -E helm uninstall traefik -n kube-system || true;
+        sudo -E helm upgrade --install traefik traefik/traefik --kubeconfig $KUBECONFIG --namespace kube-system --create-namespace --set service.type=LoadBalancer;
       fi
     - |
       sudo -E helm upgrade --install $RELEASE_NAME $CHART_DIR \
