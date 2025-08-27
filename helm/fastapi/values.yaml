@@ -50,7 +50,7 @@ securityContext: {}
   # runAsUser: 1000
 
 web:
- containerPort: 8000
+ port: 8000
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
