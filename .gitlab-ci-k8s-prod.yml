@@ -58,10 +58,9 @@ deploy_prod:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update
     - export KUBECONFIG=$KUBECONFIG_FILE
-    #- sudo kubectl config view --minify
     - sudo kubectl get nodes
     - sudo -E helm history traefik -n kube-system || echo "No previous traefik release found"
-    #- sudo -E uninstall traefik -n kube-system
+    - sudo -E helm uninstall traefik --kubeconfig $KUBECONFIG -n kube-system
     - if helm status traefik -n kube-system > /dev/null 2>&1; then 
         echo "Traefik exists --> upgrading...";
         sudo -E helm upgrade traefik traefik/traefik -n kube-system --kubeconfig $KUBECONFIG --timeout 10m0s --atomic; 
