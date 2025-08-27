@@ -70,6 +70,8 @@ deploy_prod:
         sudo -E helm uninstall traefik -n kube-system --kubeconfig $KUBECONFIG || true;
         sudo -E helm upgrade --install traefik traefik/traefik --kubeconfig $KUBECONFIG --namespace kube-system --create-namespace --timeout 10m0s --atomic --set service.type=LoadBalancer;
       fi
+    - sudo kubectl delete pods --all -n $NAMESPACE || true
+    - sudo -E helm uninstall $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG || true
     - |
       sudo -E helm upgrade --install $RELEASE_NAME $CHART_DIR \
         --kubeconfig $KUBECONFIG \
@@ -80,8 +82,8 @@ deploy_prod:
         --set image.tag=$IMAGE_TAG \
         --set-string db.password="$DB_PASSWORD"\
         --dry-run --debug | grep -A3 "kind: Service"
+    - sleep 20    
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
-    - apk add --no-cache curl || apt-get update && apt-get install -y curl
     - |
       for i in {1..10}; do
         export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
