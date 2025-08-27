@@ -83,7 +83,7 @@ ingress:
   #      - chart-example.local
 
 db:
-  image: Postgres:16
+  image: postgres:16
   port: 5432
   user: fastapi_traefik
   database: fastapi_traefik

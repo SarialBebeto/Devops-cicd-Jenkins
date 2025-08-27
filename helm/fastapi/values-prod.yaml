@@ -46,7 +46,7 @@ securityContext: {}
   # runAsUser: 1000
 
 
-This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
@@ -58,7 +58,7 @@ service:
 ingress:
   enabled: true
   className: "traefik"
-  annotations: {} #[]
+  annotations: {} 
     # traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -73,9 +73,9 @@ ingress:
         - api.example.com
 
 web:
- env:
-  - name: ENV
-    value: production
+  env:
+    - name: ENV
+      value: production
 
 resources: #{}
   # We usually recommend not to specify default resources and to leave this as a conscious
