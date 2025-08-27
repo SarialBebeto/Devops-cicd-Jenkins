@@ -19,7 +19,7 @@ deploy_prod:
     - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
-    - sudo cat $KUBECONFIG
+    #- sudo cat $KUBECONFIG
     - sudo chmod 600 $KUBECONFIG_FILE
     - sudo chown gitlab-runner:gitlab-runner $KUBECONFIG_FILE
     - sudo ls -l $KUBECONFIG_FILE
@@ -55,12 +55,14 @@ deploy_prod:
     - export KUBECONFIG=$KUBECONFIG_FILE
     - sudo kubectl config view --minify
     - sudo kubectl get nodes
+    - if helm status traefik -n kube-system > /dev/null 2>&1; then echo "Traefik already installed, skipping..."; else  
     - |
       sudo -E helm upgrade --install traefik traefik/traefik \
         --kubeconfig $KUBECONFIG \
         --namespace kube-system \
         --create-namespace \
         --set service.type=LoadBalancer
+      fi
     - |
       sudo -E helm upgrade --install $RELEASE_NAME $CHART_DIR \
         --kubeconfig $KUBECONFIG \
