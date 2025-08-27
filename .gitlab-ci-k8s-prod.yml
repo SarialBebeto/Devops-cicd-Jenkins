@@ -4,7 +4,7 @@ stages:
 variables:
   RELEASE_NAME: fastapi-prod
   NAMESPACE: production
-  CHART_DIR: ./devops-project/helm/fastapi
+  CHART_DIR: /home/ubuntu/devops-project/helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
   BIN_DIR: $CI_PROJECT_DIR/bin
