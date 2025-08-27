@@ -9,7 +9,7 @@ variables:
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
   BIN_DIR: $CI_PROJECT_DIR/bin
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-  DB_PASSWORD: $DB_PASSWORD_PROD
+  DB_PASSWORD: "traefikapi2025@"
 
 
 deploy_prod:
@@ -50,6 +50,7 @@ deploy_prod:
     - sudo kubectl version
     - sudo kubectl get nodes
     - echo "Password=$DB_PASSWORD"
+    - export DB_PASSWORD_PROD=$DB_PASSWORD
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
