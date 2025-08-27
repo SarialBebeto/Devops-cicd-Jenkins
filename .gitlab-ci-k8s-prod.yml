@@ -52,6 +52,9 @@ deploy_prod:
   script:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update
+    - export KUBECONFIG=$KUBECONFIG_FILE
+    - sudo kubectl config view --minify
+    - sudo kubectl get nodes
     - |
       sudo helm upgrade --install traefik traefik/traefik \
         --set service.type=LoadBalancer
