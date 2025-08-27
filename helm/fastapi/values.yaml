@@ -83,7 +83,10 @@ ingress:
   #      - chart-example.local
 
 db:
-  image: postgres:16
+  image: 
+   repository: postgres
+   tag: "latest"
+   pullPolicy: IfNotPresent
   port: 5432
   user: fastapi_traefik
   database: fastapi_traefik
