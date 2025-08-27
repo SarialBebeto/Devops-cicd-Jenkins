@@ -58,7 +58,7 @@ deploy_prod:
     - |
       sudo -E helm upgrade --install traefik traefik/traefik \
         --kubeconfig $KUBECONFIG \
-        --namespace $NAMESPACE \
+        --namespace kube-system \
         --create-namespace \
         --set service.type=LoadBalancer
     - |
