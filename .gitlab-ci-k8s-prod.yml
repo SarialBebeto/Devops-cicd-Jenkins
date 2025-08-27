@@ -56,10 +56,10 @@ deploy_prod:
     - sudo kubectl config view --minify
     - sudo kubectl get nodes
     - |
-      sudo helm upgrade --install traefik traefik/traefik \
+      helm upgrade --install traefik traefik/traefik \
         --set service.type=LoadBalancer
     - |
-      sudo helm upgrade --install $RELEASE_NAME $CHART_DIR \
+      helm upgrade --install $RELEASE_NAME $CHART_DIR \
         --namespace $NAMESPACE \
         --create-namespace \
         -f $CHART_DIR/values.yaml \
