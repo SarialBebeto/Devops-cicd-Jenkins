@@ -28,10 +28,12 @@ deploy_prod:
     - sudo ls -l $KUBECONFIG_FILE
 
     # Install dependencies
+    - echo "Installing dependencies..."
     - sudo apt-get update -y
     - sudo apt-get install -y curl bash openssl tar
 
     # Install kubectl into the workspace
+    - echo "Installing kubectl..."
     - mkdir -p $BIN_DIR
     - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - mv kubectl $BIN_DIR/kubectl
@@ -39,6 +41,7 @@ deploy_prod:
     - chmod +x $BIN_DIR/kubectl
     
     # Install helm into the workspace
+    - echo "Installing helm..."
     - curl -sL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz -o /tmp/helm.tgz
     - tar -zxvf /tmp/helm.tgz -C /tmp
     - mv /tmp/linux-amd64/helm $BIN_DIR/helm
