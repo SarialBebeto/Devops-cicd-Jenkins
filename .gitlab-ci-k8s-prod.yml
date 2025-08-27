@@ -16,6 +16,7 @@ deploy_prod:
   stage: deploy
   tags:
     - runner_fastapi_project
+    - runner_fastapi_project_second
   before_script:
     - whoami
     - export PATH=$BIN_DIR:$PATH
