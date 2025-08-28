@@ -63,6 +63,7 @@ deploy_prod:
     - export KUBECONFIG=$KUBECONFIG_FILE
     - sudo kubectl get nodes
     - sudo -E helm history traefik -n kube-system || echo "No previous traefik release found"
+    - sudo kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
     - sudo -E helm uninstall traefik --kubeconfig $KUBECONFIG -n kube-system || true
     - if helm status traefik -n kube-system > /dev/null 2>&1; then 
         echo "Traefik exists --> upgrading...";
