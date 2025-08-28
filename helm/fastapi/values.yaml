@@ -83,7 +83,10 @@ ingress:
   #      - chart-example.local
 
 db:
-  image: Postgres:16
+  image: 
+   repository: postgres
+   tag: "latest"
+   pullPolicy: IfNotPresent
   port: 5432
   user: fastapi_traefik
   database: fastapi_traefik
@@ -108,11 +111,13 @@ resources: {}
 livenessProbe:
   httpGet:
     path: /
-    port: http
+    # port: http
+    port: 8000
 readinessProbe:
   httpGet:
     path: /
-    port: http
+    # port: http
+    port: 8000
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:

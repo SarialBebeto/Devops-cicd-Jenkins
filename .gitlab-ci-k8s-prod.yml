@@ -9,13 +9,16 @@ variables:
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
   BIN_DIR: $CI_PROJECT_DIR/bin
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  DB_PASSWORD: "traefikapi2025@"
 
 
 deploy_prod:
   stage: deploy
   tags:
-    - runner_fastapi_project
+    #- runner_fastapi_project
+    - runner_fastapi_project_second
   before_script:
+    - whoami
     - export PATH=$BIN_DIR:$PATH
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
@@ -25,10 +28,12 @@ deploy_prod:
     - sudo ls -l $KUBECONFIG_FILE
 
     # Install dependencies
+    - echo "Installing dependencies..."
     - sudo apt-get update -y
     - sudo apt-get install -y curl bash openssl tar
 
     # Install kubectl into the workspace
+    - echo "Installing kubectl..."
     - mkdir -p $BIN_DIR
     - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - mv kubectl $BIN_DIR/kubectl
@@ -36,6 +41,7 @@ deploy_prod:
     - chmod +x $BIN_DIR/kubectl
     
     # Install helm into the workspace
+    - echo "Installing helm..."
     - curl -sL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz -o /tmp/helm.tgz
     - tar -zxvf /tmp/helm.tgz -C /tmp
     - mv /tmp/linux-amd64/helm $BIN_DIR/helm
@@ -48,15 +54,17 @@ deploy_prod:
     - sudo kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
     - sudo kubectl version
     - sudo kubectl get nodes
+    - echo "Password=$DB_PASSWORD"
+    - export DB_PASSWORD_PROD=$DB_PASSWORD
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
     - helm repo add traefik https://traefik.github.io/charts
     - helm repo update
     - export KUBECONFIG=$KUBECONFIG_FILE
-    #- sudo kubectl config view --minify
     - sudo kubectl get nodes
     - sudo -E helm history traefik -n kube-system || echo "No previous traefik release found"
-    #- sudo -E uninstall traefik -n kube-system
+    - sudo kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
+    - sudo -E helm uninstall traefik --kubeconfig $KUBECONFIG -n kube-system || true
     - if helm status traefik -n kube-system > /dev/null 2>&1; then 
         echo "Traefik exists --> upgrading...";
         sudo -E helm upgrade traefik traefik/traefik -n kube-system --kubeconfig $KUBECONFIG --timeout 10m0s --atomic; 
@@ -65,8 +73,10 @@ deploy_prod:
         sudo -E helm uninstall traefik -n kube-system --kubeconfig $KUBECONFIG || true;
         sudo -E helm upgrade --install traefik traefik/traefik --kubeconfig $KUBECONFIG --namespace kube-system --create-namespace --timeout 10m0s --atomic --set service.type=LoadBalancer;
       fi
+    - sudo kubectl delete pods --all -n $NAMESPACE || true
+    - sudo -E helm uninstall $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG || true
     - |
-      sudo -E helm upgrade --install $RELEASE_NAME $CHART_DIR \
+      sudo -E helm install $RELEASE_NAME $CHART_DIR \
         --kubeconfig $KUBECONFIG \
         --namespace $NAMESPACE \
         --create-namespace \
@@ -74,8 +84,11 @@ deploy_prod:
         -f $CHART_DIR/values-prod.yaml \
         --set image.tag=$IMAGE_TAG \
         --set-string db.password="$DB_PASSWORD"
+    #--dry-run --debug | grep -A3 "kind: Service"
+    - sleep 20  
+    - helm list -n $NAMESPACE  
+    - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
-    - apk add --no-cache curl || apt-get update && apt-get install -y curl
     - |
       for i in {1..10}; do
         export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
@@ -83,8 +96,7 @@ deploy_prod:
         sleep 10;
       done
     - 'echo "Service IP: $SERVICE_IP"'
-    - |
-      if [ -n "$SERVICE_IP" ]; then
+    - if [ -n "$SERVICE_IP" ]; then
         curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
       else
         echo "Service IP not found!" && exit 1;
@@ -93,3 +105,4 @@ deploy_prod:
   environment:
     name: production
     url: https://api.example.com
+  allow_failure: true
