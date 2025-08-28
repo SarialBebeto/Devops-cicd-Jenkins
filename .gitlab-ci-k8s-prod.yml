@@ -85,6 +85,7 @@ deploy_prod:
         --set-string db.password="$DB_PASSWORD"\
         --dry-run --debug | grep -A3 "kind: Service"
     - sleep 20    
+    - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - |
       for i in {1..10}; do
