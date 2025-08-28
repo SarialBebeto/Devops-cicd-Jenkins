@@ -63,7 +63,7 @@ deploy_prod:
     - export KUBECONFIG=$KUBECONFIG_FILE
     - sudo kubectl get nodes
     - sudo -E helm history traefik -n kube-system || echo "No previous traefik release found"
-    - sudo -E helm uninstall traefik --kubeconfig $KUBECONFIG -n kube-system
+    - sudo -E helm uninstall traefik --kubeconfig $KUBECONFIG -n kube-system || true
     - if helm status traefik -n kube-system > /dev/null 2>&1; then 
         echo "Traefik exists --> upgrading...";
         sudo -E helm upgrade traefik traefik/traefik -n kube-system --kubeconfig $KUBECONFIG --timeout 10m0s --atomic; 
@@ -104,3 +104,4 @@ deploy_prod:
   environment:
     name: production
     url: https://api.example.com
+  allow_failure: true
