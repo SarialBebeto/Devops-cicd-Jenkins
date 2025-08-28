@@ -75,16 +75,17 @@ deploy_prod:
     - sudo kubectl delete pods --all -n $NAMESPACE || true
     - sudo -E helm uninstall $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG || true
     - |
-      sudo -E helm upgrade --install $RELEASE_NAME $CHART_DIR \
+      sudo -E helm install $RELEASE_NAME $CHART_DIR \
         --kubeconfig $KUBECONFIG \
         --namespace $NAMESPACE \
         --create-namespace \
         -f $CHART_DIR/values.yaml \
         -f $CHART_DIR/values-prod.yaml \
         --set image.tag=$IMAGE_TAG \
-        --set-string db.password="$DB_PASSWORD"\
-        --dry-run --debug | grep -A3 "kind: Service"
-    - sleep 20    
+        --set-string db.password="$DB_PASSWORD"
+    #--dry-run --debug | grep -A3 "kind: Service"
+    - sleep 20  
+    - helm list -n $NAMESPACE  
     - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - |
