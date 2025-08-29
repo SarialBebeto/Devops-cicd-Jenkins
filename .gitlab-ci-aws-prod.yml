@@ -35,6 +35,5 @@ deploy_prod:
   environment:
     name: production
     url: https://api.example.com
-  when: manual
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'

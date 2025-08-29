@@ -111,6 +111,7 @@ deploy_dev_aws:
     include:
       - local: .gitlab-ci-aws-dev.yml
     strategy: depend
+  when: manual 
   
 
 deploy_prod_aws:
@@ -121,3 +122,4 @@ deploy_prod_aws:
     include:
       - local: .gitlab-ci-aws-prod.yml
     strategy: depend
+  when: manual
