@@ -3,7 +3,6 @@ stages:
  - build
  - test
  - deploy
- - trigger
 
 update:
   stage: update
@@ -104,8 +103,8 @@ k8s_pipeline_prod:
       - local: .gitlab-ci-k8s-prod.yml
     strategy: depend
 
-trigger_dev_aws:
-  stage: trigger
+deploy_dev_aws:
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   trigger:
@@ -114,8 +113,8 @@ trigger_dev_aws:
     strategy: depend
   
 
-trigger_prod_aws:
-  stage: trigger
+deploy_prod_aws:
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   trigger:
