@@ -105,5 +105,5 @@ deploy_prod:
   environment:
     name: production
     url: https://api.example.com
-  allow_failure: true
   when: manual
+  allow_failure: true

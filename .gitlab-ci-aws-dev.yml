@@ -35,9 +35,9 @@ deploy_dev:
         --set image.tag=$IMAGE_TAG \
         --set-string db.password="$DB_PASSWORD_DEV"\
         --set image.pullSecrets[0].name=gitlab-regcred
-  
   environment:
     name: dev
     url: https://dev.example.com
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
+  when: manual

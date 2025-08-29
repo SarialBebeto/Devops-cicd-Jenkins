@@ -9,6 +9,8 @@ variables:
   CHART_DIR: ./devops-project/helm-aws/fastapi
   IMAGE_NAME: $CI_REGISTRY_IMAGE/app
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  GITLAB_USER: $CI_COMMIT_AUTHOR
+  GITLAB_PASSWORD: $PAT_GITLAB
 
 deploy_prod:
   stage: deploy
@@ -16,13 +18,49 @@ deploy_prod:
   before_script:
     - apk add --no-cache curl unzip bash ca-certificates openssl
     - curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    - unzip -q awscliv2.zip && ./aws/install
+    - unzip -q awscliv2.zip && 
+    - sudo ./aws/install
     - curl -sSL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -sSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
     - curl -sSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    - helm version
+    - curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+    - mv /tmp/eksctl /usr/local/bin
+    - eksctl version
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    - kubectl version --client
     - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+    - export AWS_REGION=$AWS_REGION
+    - export CLUSTER=$EKS_CLUSTER_NAME
+    - eksctl create cluster --name $CLUSTER --region $AWS_REGION  --kubeconfig=kubeconfig.yaml --nodegroup-name ng-app --node-type t3.large --nodes 2 --nodes-min 1 --nodes-max 3 --managed --with-oidc
+    - eksctl create addon --name aws-ebs-csi-driver --cluster $CLUSTER --region $AWS_REGION --force
+    - kubectl get sc
+    - kubectl annotate sc gp3 storageclass.kubernetes.io/is-default-class=true --overwrite
+    - export CI_REGISTRY=registry.gitlab.com
+    - export CI_USER=$GITLAB_USER
+    - exprt CI_PASS=$PAT_GITLAB
+    - export CI_EMAIL="tsamosarial@yahoo.fr"
 
   script:
     - kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+    - kubectl create secret docker-registry gitlab-regcred \
+        --docker-server=$CI_REGISTRY \
+        --docker-username=$CI_USER \
+        --docker-password=$CI_PASS \
+        --docker-email=$CI_EMAIL \
+        --namespace $NAMESPACE
+
+    - helm repo add traefik https://traefik.github.io/charts
+    - helm repo update
+    - helm upgrade --install traefik traefik/traefik \
+        -n traefik --create-namespace \
+        --set service.type=LoadBalancer \
+        --set ingressClass.enabled=true \
+        --set ingressClass.isDefaultClass=true \
+        --set service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"=nlb \
+        --set service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-nlb-target-type"=ip \
+        --set service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-scheme"=internet-facing
+    - kubectl get svc -n traefik traefik -o jsonpath='{.status.loadBalancer.ingress[0].hostname}; echo
     - helm upgrade --install $RELEASE_NAME $CHART_DIR \
         --namespace $NAMESPACE \
         -f $CHART_DIR/values.yaml \
@@ -31,6 +69,12 @@ deploy_prod:
         --set image.tag=$IMAGE_TAG \
         --set-string db.password="$DB_PASSWORD_PROD"\
         --set image.pullSecrets[0].name=gitlab-regcred
+    - helm repo add jetstack https://charts.jetstack.io
+    - helm repo update
+    - helm upgrade --install cert-manager jetstack/cert-manager \
+        --namespace cert-manager --create-namespace \
+        --set crds.enabled=true
+    - kubectl apply -f $CHART_DIR/clusterissuer.yaml
 
   environment:
     name: production

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: fastapi
-description: A Helm chart for Kubernetes
+description: FastAPI + Postgres with Traefik Ingress
 
 # A chart can be either an 'application' or a 'library' chart.
 #
