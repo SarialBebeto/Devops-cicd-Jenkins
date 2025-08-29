@@ -106,3 +106,4 @@ deploy_prod:
     name: production
     url: https://api.example.com
   allow_failure: true
+  when: manual

@@ -36,3 +36,4 @@ deploy_dev:
   environment:
     name: dev
     url: https://dev.example.com
+  when: manual

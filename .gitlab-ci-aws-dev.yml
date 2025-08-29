@@ -1,0 +1,44 @@
+stages:
+ - deploy
+
+variables:
+  EKS_CLUSTER_NAME: fastapi-eks
+  AWS_REGION: eu-west-3
+  RELEASE_NAME: fastapi-dev
+  NAMESPACE: dev
+  CHART_DIR: ./devops-project/helm-aws/fastapi
+  IMAGE_NAME: $CI_REGISTRY_IMAGE/app
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+
+deploy_dev:
+  stage: deploy
+  image: alpine:3.19
+  before_script:
+    - apk add --no-cache curl unzip bash ca-certificates
+    # awscli
+    - curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    - unzip -q awscliv2.zip && ./aws/install
+    # kubectl
+    - curl -sSL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -sSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
+    # helm
+    - curl -sSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    # kubeconfig from EKS
+    - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+  
+  script:
+    - kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+    - helm upgrade --install $RELEASE_NAME $CHART_DIR \
+        --namespace $NAMESPACE \
+        -f $CHART_DIR/values.yaml \
+        -f $CHART_DIR/values-dev.yaml \
+        --set image.repository=$IMAGE_NAME \
+        --set image.tag=$IMAGE_TAG \
+        --set-string db.password="$DB_PASSWORD_DEV"\
+        --set image.pullSecrets[0].name=gitlab-regcred
+  
+  environment:
+    name: dev
+    url: https://dev.example.com
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+  when: manual
