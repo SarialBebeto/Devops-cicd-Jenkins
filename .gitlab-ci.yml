@@ -101,7 +101,7 @@ k8s_pipeline_prod:
   trigger:
     include: 
       - local: .gitlab-ci-k8s-prod.yml
-  strategy: depend
+    strategy: depend
 
 deploy_dev_aws:
   stage: deploy
@@ -110,7 +110,7 @@ deploy_dev_aws:
   trigger:
     include:
       - local: .gitlab-ci-aws-dev.yml
-  strategy: depend
+    strategy: depend
   
 
 deploy_prod_aws:
@@ -120,4 +120,4 @@ deploy_prod_aws:
   trigger:
     include:
       - local: .gitlab-ci-aws-prod.yml
-  strategy: depend
+    strategy: depend
