@@ -1,0 +1,5 @@
+FROM amazon/aws-cli
+
+RUN yum install -y openssl
+
+RUN yum install -y curl unzip bash ca-certificates 
