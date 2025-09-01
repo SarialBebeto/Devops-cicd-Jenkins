@@ -19,6 +19,8 @@ build:
   services:
     - docker:dind
   script:
+    - echo "User: $DOCKER_REGISTRY_USER"
+    - echo "Pass: $DOCKER_REGISTRY_PASSWORD"
     - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin 
     - docker build -t "$DOCKER_REGISTRY_USER/fastapi-aws:$IMAGE_TAG" -f Dockerfile.aws .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-aws:$IMAGE_TAG"
