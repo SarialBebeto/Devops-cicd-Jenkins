@@ -19,8 +19,8 @@ deploy_prod:
     - apk add --no-cache curl unzip bash ca-certificates openssl
     - curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     - unzip -q awscliv2.zip 
-    - ls -a
-    - sudo ./aws/install
+    # - ls -a
+    - ./aws/install
     - curl -sSL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -sSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
     - curl -sSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
