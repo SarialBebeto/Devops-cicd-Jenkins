@@ -21,6 +21,7 @@ deploy_prod:
     - unzip -q awscliv2.zip 
     # - ls -a
     - ./aws/install
+    - /usr/local/bin/aws --version
     - curl -sSL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -sSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
     - curl -sSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm version
@@ -28,7 +29,7 @@ deploy_prod:
     - mv /tmp/eksctl /usr/local/bin
     - eksctl version
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    - sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    - install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
     - kubectl version --client
     - aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
     - export AWS_REGION=$AWS_REGION
