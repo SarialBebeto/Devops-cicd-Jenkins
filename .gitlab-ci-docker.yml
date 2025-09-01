@@ -21,7 +21,6 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
-  when: manual # just for testing purpose
 
 build:
   stage: build
@@ -66,7 +65,6 @@ unit-test:
       junit: report.xml
   only:
     - main  
-  when: manual
 
 smoke-test:
   stage: test
@@ -89,7 +87,6 @@ smoke-test:
     - docker-compose down
   only:
     - main
-  when: manual
 
 deploy_dev:
   stage: deploy_dev
@@ -122,15 +119,15 @@ deploy_prod:
    - echo "Deploying to Production..."
    #- docker-compose -f docker-compose.prod.yml -f docker-compose.prod.override.yml up -d --build
    - docker-compose -f docker-compose.prod.yml up -d --build
-   - sleep 15 # wait for services to start
+   - sleep 15               # wait for services to start
    - docker-compose ps
    - docker-compose logs web
    - docker-compose exec -T web curl -f http://web:80/ || (echo "Health check failed!" && exit 1)
    - docker-compose exec -T web curl -f http://web:80/docs || (echo "Docs endpoint check failed!" && exit 1)
    - echo "Deployment to Production successful!"
-  # environment:
-  #   name: Production
-  #   url: http://prod-fastapi.ip-ddns.com
+  environment:
+    name: Production
+    url: http://prod-fastapi.ip-ddns.com
   only:
     - main
   when: manual
