@@ -21,6 +21,7 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
+  when: manual # just for testing purpose
 
 build:
   stage: build
@@ -37,6 +38,7 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
+  when: manual
 
 unit-test:
   stage: test
@@ -64,6 +66,7 @@ unit-test:
       junit: report.xml
   only:
     - main  
+  when: manual
 
 smoke-test:
   stage: test
@@ -86,6 +89,7 @@ smoke-test:
     - docker-compose down
   only:
     - main
+  when: manual
 
 deploy_dev:
   stage: deploy_dev
@@ -116,7 +120,8 @@ deploy_prod:
     - docker:dind
   script:
    - echo "Deploying to Production..."
-   - docker-compose -f docker-compose.prod.yml -f docker-compose.prod.override.yml up -d --build
+   #- docker-compose -f docker-compose.prod.yml -f docker-compose.prod.override.yml up -d --build
+   - docker-compose -f docker-compose.prod.yml up -d --build
    - sleep 15 # wait for services to start
    - docker-compose ps
    - docker-compose logs web
