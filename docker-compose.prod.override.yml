@@ -1,29 +1,10 @@
 version: "3.8"
 
 services:
-  # nginx-proxy:
-  #   image: jwilder/nginx-proxy
-  #   container_name: nginx-proxy
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - /etc/nginx/certs:/etc/nginx/certs
-  #     - /etc/nginx/vhost.d:/etc/nginx/vhost.d
-  #     - /usr/share/nginx/html:/usr/share/nginx/html
-  #     - /var/run/docker.sock:/tmp/docker.sock:ro
-  #   restart: always
+  nginx-proxy:
+    deploy:
+      replicas: 0
 
-  # nginx-proxy-acme:
-  #   image: nginxproxy/acme-companion
-  #   container_name: nginx-proxy-acme
-  #   volumes:
-  #     - /etc/nginx/certs:/etc/nginx/certs
-  #     - /etc/nginx/vhost.d:/etc/nginx/vhost.d
-  #     - /usr/share/nginx/html:/usr/share/nginx/html
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #   environment:
-  #     - DEFAULT_EMAIL=tsamosarial@yahoo.fr
-  #   depends_on:
-  #     - nginx-proxy
-  #   restart: always
+  nginx-proxy-acme:
+    deploy:
+      replicas: 0
