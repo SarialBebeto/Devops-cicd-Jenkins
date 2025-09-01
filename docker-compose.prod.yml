@@ -12,10 +12,21 @@ services:
     depends_on:
       - db
     labels:
+      # Enable Traefik for the web service
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.your-domain.com`)"
+
+      # Route traffic for FastAPI app based the choose domain
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+      
+      # Enable TLS (SSL) on the router
       - "traefik.http.routers.fastapi.tls=true"
+
+      # Use Let's Encrypt resolver
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+
+      # Ensure traffic gets forwarde to the app's exposed port 80
+      - "traefik.http.services.fastapi.loadbalancer.server.port=80"
+
   db:
     image: postgres:15-alpine
     volumes:
@@ -26,22 +37,48 @@ services:
       - POSTGRES_USER=fastapi_traefik_prod
       - POSTGRES_PASSWORD=fastapi_traefik_prod
       - POSTGRES_DB=fastapi_traefik_prod
+
   traefik:
     build:
       context: .
       dockerfile: Dockerfile.traefik
     ports:
-      - 80:80
-      - 443:443
+      - 80:80   # HTTP
+      - 443:443 # HTTPS
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+      # Persist certificates issued by Let's Encrypt
       - "./traefik-public-certificates:/certificates"
+    command:
+      # Enable Docker as a provider
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      # Enable entrypoints for HTTP and HTTPS
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      # Redirect all HTTP to HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      # TLS certificate resolver
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=tsamosarial@yahoo.fr"  
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.your-domain.com`) && (PathPrefix(`/`)"
+
+      # Protect Traefik dashboard behind the domain
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`) && (PathPrefix(`/`)"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"
+
+      # Password protect the dashboard
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1"
 

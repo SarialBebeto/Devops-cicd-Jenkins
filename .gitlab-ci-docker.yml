@@ -8,7 +8,6 @@ stages:
 variables:
   IMAGE_TAG: latest
   DOCKER_DRIVER: overlay2
-  # DATABASE_URL: sqlite:///./test.db
   PYTHONPATH: .
 
 update:
@@ -58,7 +57,7 @@ unit-test:
     - pip install --upgrade pip setuptools wheel
     - pip install -r requirements.txt pytest
   script:
-    - PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test is run at this stage
+    - PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml # the test runs at this stage
   artifacts:
     when: always
     reports:
@@ -91,6 +90,7 @@ smoke-test:
 deploy_dev:
   stage: deploy_dev
   image: docker:latest
+  #Tags: runner_fastapi_project                  # the only thing new here
   services:
     - docker:dind
   script:
@@ -101,8 +101,6 @@ deploy_dev:
    - docker-compose logs web
    - docker-compose exec -T web curl -f http://web:8000/ || (echo "Health check failed!" && exit 1)
    - docker-compose exec -T web curl -f http://web:8000/docs || (echo "Docs endpoint check failed!" && exit 1)
-   # - echo "trying curl on localhost"
-   # - docker-compose exec -T web curl -f http://localhost:8000/ || (echo "Localhost health check failed!" && exit 1)
    - echo "Deployment to Dev successful."
   environment:
     name: dev
@@ -118,18 +116,16 @@ deploy_prod:
     - docker:dind
   script:
    - echo "Deploying to Production..."
-   - docker-compose -f docker-compose.prod.yml up -d --build
+   - docker-compose -f docker-compose.prod.yml -f docker-compose.prod.override.yml up -d --build
    - sleep 15 # wait for services to start
    - docker-compose ps
    - docker-compose logs web
    - docker-compose exec -T web curl -f http://web:80/ || (echo "Health check failed!" && exit 1)
    - docker-compose exec -T web curl -f http://web:80/docs || (echo "Docs endpoint check failed!" && exit 1)
-   # - echo "trying curl on localhost"
-   # - docker-compose exec -T web curl -f http://localhost:80/ || (echo "Localhost health check failed!" && exit 1)
    - echo "Deployment to Production successful!"
-  environment:
-    name: Production
-    url: http://prod.example.com
+  # environment:
+  #   name: Production
+  #   url: http://prod-fastapi.ip-ddns.com
   only:
     - main
   when: manual
