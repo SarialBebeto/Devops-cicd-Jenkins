@@ -2,7 +2,7 @@ stages:
  - update
  - build
  - test
- - deploy_with_docker
+ - deploy_using_docker
  - deploy
  - deploy_aws
 
@@ -78,10 +78,9 @@ smoke-test:
     - docker-compose down
   only:
     - main
-  when: manual # just for testing purposes
 
 docker_pipeline:
-  stage: deploy_with_docker
+  stage: deploy_using_docker
   trigger:
     include: .gitlab-ci-docker.yml
     strategy: depend

@@ -48,7 +48,9 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
       # Persist certificates issued by Let's Encrypt
-      - "./traefik-public-certificates:/certificates"
+      #- "./traefik-public-certificates:/certificates"   # i comment this to test 
+      - "./traefik-public-certificates:/letsencrypt"
+
     command:
       # Enable Docker as a provider
       - "--providers.docker=true"
