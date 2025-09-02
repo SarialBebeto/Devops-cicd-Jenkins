@@ -150,4 +150,4 @@ deploy_to_production:
     url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
     only:
       - main
-    when: manual
+  when: manual
