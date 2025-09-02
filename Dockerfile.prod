@@ -8,4 +8,6 @@ RUN pip install -r requirements.txt
 # just in case, install curl
 RUN apt-get update && apt-get install -y curl
 
+RUN apt-get install -y docker-compose
+
 COPY . .

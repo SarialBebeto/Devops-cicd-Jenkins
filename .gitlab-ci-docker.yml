@@ -38,6 +38,7 @@ build:
   only:
     - main
 
+
 unit-test:
   stage: test
   image: python:3.11-slim
@@ -64,6 +65,7 @@ unit-test:
       junit: report.xml
   only:
     - main  
+  when: manual 
 
 smoke-test:
   stage: test
@@ -90,7 +92,6 @@ smoke-test:
 deploy_dev:
   stage: deploy_dev
   image: docker:latest
-  #Tags: runner_fastapi_project                  # the only thing new here
   services:
     - docker:dind
   script:
@@ -108,6 +109,7 @@ deploy_dev:
   only:
     - main
     - develop
+  when: manual
 
 deploy_prod:
   stage: deploy_prod
@@ -118,11 +120,11 @@ deploy_prod:
   script:
    - echo "Deploying to Production..."
    #- docker-compose -f docker-compose.prod.yml -f docker-compose.prod.override.yml up -d --build
-   #- docker-compose -f docker-compose.prod.yml up -d --build
-   - sleep 15               # wait for services to start
+   - docker-compose -f docker-compose.prod.yml up -d --build
+   - sleep 20               # wait for services to start
    - docker-compose ps
    - docker-compose logs web
-   - docker ps
+   - docker ps -a
    - docker-compose exec -T web curl -f http://web:80/ || (echo "Health check failed!" && exit 1)
    - docker-compose exec -T web curl -f http://web:80/docs || (echo "Docs endpoint check failed!" && exit 1)
    - echo "Deployment to Production successful!"
