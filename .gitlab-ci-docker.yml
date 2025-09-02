@@ -139,6 +139,9 @@ deploy_to_production:
   tags: 
    - runner_fastapi_project_second
   image: docker:27-cli
+  before_script:
+    - echo "Installing depencies"
+    - sudo apt-get install -y docker-compose
   script:
     - echo "Deploying to Production (host Docker)"
     - docker-compose -f docker-compose.prod.yml up -d --build
