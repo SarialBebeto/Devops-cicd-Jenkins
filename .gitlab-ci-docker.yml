@@ -110,6 +110,7 @@ deploy_dev:
   only:
     - main
     - develop
+  when: manual
 
 deploy_prod:
   stage: deploy_prod
@@ -138,15 +139,12 @@ deploy_to_production:
   tags: 
    - runner_fastapi_project_second
   image: docker:27-cli
-  # before_script:
-  #   - echo "Installing docker compose"
-  #   - apt-get install -y docker-compose
   script:
     - echo "Deploying to Production (host Docker)"
-    - docker compose -f docker-compose.prod.yml up -d --build
+    - docker-compose -f docker-compose.prod.yml up -d --build
     - sleep 20
-    - docker compose ps
-    - docker compose logs web
+    - docker-compose ps
+    - docker-compose logs web
     # Public HTTPS checks (from CI runner to your domain)
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -fsSIL "https://$DOMAIN" || (echo "public HTTPS failed" && exit 1)
