@@ -156,6 +156,7 @@ deploy_to_production:
             - "8000:80"
             - "8443:443"
       EOF
+    - export COMPOSE_HTTP_TIMEOUT=300
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
     - sleep 20
     - docker-compose ps
