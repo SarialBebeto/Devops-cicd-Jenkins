@@ -38,7 +38,7 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
-  when: main
+  when: manual
 
 unit-test:
   stage: test
