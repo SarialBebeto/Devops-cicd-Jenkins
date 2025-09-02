@@ -141,7 +141,10 @@ deploy_to_production:
   image: docker:27-cli
   before_script:
     - echo "Installing depencies"
-    - sudo apt-get install -y docker-compose
+    - if ! command -v docker-compose &> /dev/null; then
+         sudo apt-get install docker-compose -y
+      fi
+    - docker-compose version
   script:
     - echo "Deploying to Production (host Docker)"
     - docker-compose -f docker-compose.prod.yml up -d --build
