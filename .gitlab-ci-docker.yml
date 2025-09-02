@@ -113,8 +113,7 @@ deploy_dev:
 
 deploy_prod:
   stage: deploy_prod
-  #image: docker:latest
-  image: $DOCKER_REGISTRY_USER/fastapi-prod:$IMAGE_TAG
+  image: docker:latest
   services:
     - docker:dind
   script:
