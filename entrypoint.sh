@@ -9,4 +9,4 @@ until pg_isready -h db -p 5432 -U "${POSTGRES_USER:fastapi_traefik_prod}"; do
 done
 
 echo "Postgres is up - starting server"
-exec uvicorn app.main:app --host 0.0.0.0 --port 80
+exec uvicorn app.main:app --host 0.0.0.0 --port 8000
