@@ -135,7 +135,8 @@ deploy_prod:
 
 deploy_to_production:
   stage: secure_deploy_prod
-  tags: second_runner_fastapi_project
+  tags: 
+   - second_runner_fastapi_project
   image: docker:27-cli
   script:
     - echo "Deploying to Production (host Docker)"
