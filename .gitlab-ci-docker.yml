@@ -152,19 +152,21 @@ deploy_to_production:
       cat > docker-compose.override.yml <<EOF
       version: "3.8"
       services:
-        traefik:
+        web:
           ports:
-            - "8080:80"
-            - "8443:443"
+            - "8000:80"
       EOF
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
     #- docker-compose -f docker-compose.prod.yml up -d --build
+            #   ports:
+            # - "8080:80"
+            # - "8443:443"
     - sleep 20
     - docker-compose ps
     - docker-compose logs web
     # Public HTTPS checks (from CI runner to your domain)
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
-    - curl -fsSIL "https://$DOMAIN" || (echo "public HTTPS failed" && exit 1)
+    - curl -kfsSIL "https://$DOMAIN" || (echo "public HTTPS failed" && exit 1)
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
   environment:
