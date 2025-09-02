@@ -148,6 +148,6 @@ deploy_to_production:
   environment:
     name: Production
     url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
-    only:
-      - main
+  only:
+    - main
   when: manual
