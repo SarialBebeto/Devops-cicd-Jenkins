@@ -1,6 +1,7 @@
 import databases
 import ormar
 import sqlalchemy
+import time
 
 from .config import settings
 
@@ -24,6 +25,8 @@ class User(ormar.Model):
 def init_db():
     # Create all tables. Only used for test/CI.
     engine = sqlalchemy.create_engine(settings.db_url)
+    if not try_connect(engine, retries=30, delay=1):
+        raise RuntimeError("DB not reachable during startup")
     metadata.create_all(engine)
 
 engine = sqlalchemy.create_engine(settings.db_url)
