@@ -145,7 +145,7 @@ deploy_to_production:
          sudo apt-get install docker-compose -y;
       fi
     - docker-compose version
-    - docker compose -f docker-compose.prod.yml down
+    - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
     - |
@@ -157,7 +157,7 @@ deploy_to_production:
             - "8080:80"
             - "8443:443"
       EOF
-    - docker compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
     #- docker-compose -f docker-compose.prod.yml up -d --build
     - sleep 20
     - docker-compose ps
