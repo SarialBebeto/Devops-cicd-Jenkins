@@ -110,7 +110,6 @@ deploy_dev:
   only:
     - main
     - develop
-  when: manual
 
 deploy_prod:
   stage: deploy_prod
@@ -139,7 +138,7 @@ deploy_to_production:
   image: docker:27-cli
   script:
     - echo "Deploying to Production (host Docker)"
-    - docker compose -f docker-compose.prod.yml up -d --build
+    - docker-compose -f docker-compose.prod.yml up -d --build
     - sleep 20
     - docker-compose ps
     - docker-compose logs web
