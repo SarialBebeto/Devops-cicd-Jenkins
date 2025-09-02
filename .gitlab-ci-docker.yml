@@ -142,7 +142,7 @@ deploy_to_production:
   before_script:
     - echo "Installing depencies"
     - if ! command -v docker-compose &> /dev/null; then
-         sudo apt-get install docker-compose -y
+         sudo apt-get install docker-compose -y;
       fi
     - docker-compose version
   script:
