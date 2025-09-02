@@ -108,7 +108,7 @@ deploy_dev:
   only:
     - main
     - develop
-  when: manual
+  #when: manual
 
 deploy_prod:
   stage: deploy_prod
