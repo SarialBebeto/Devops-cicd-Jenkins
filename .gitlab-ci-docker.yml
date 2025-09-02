@@ -38,6 +38,7 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
+  when: main
 
 unit-test:
   stage: test
@@ -65,6 +66,7 @@ unit-test:
       junit: report.xml
   only:
     - main   
+  when: manual
 
 smoke-test:
   stage: test
@@ -108,7 +110,7 @@ deploy_dev:
   only:
     - main
     - develop
-  #when: manual
+  when: manual
 
 deploy_prod:
   stage: deploy_prod
