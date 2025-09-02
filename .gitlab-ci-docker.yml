@@ -150,17 +150,13 @@ deploy_to_production:
     - echo "Deploying to Production (host Docker)"
     - |
       cat > docker-compose.override.yml <<EOF
-      version: "3.8"
       services:
-        web:
+        traefik:
           ports:
             - "8000:80"
+            - "8443:443"
       EOF
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
-    #- docker-compose -f docker-compose.prod.yml up -d --build
-            #   ports:
-            # - "8080:80"
-            # - "8443:443"
     - sleep 20
     - docker-compose ps
     - docker-compose logs web
