@@ -64,8 +64,7 @@ unit-test:
     reports:
       junit: report.xml
   only:
-    - main  
-  when: manual 
+    - main   
 
 smoke-test:
   stage: test
@@ -118,7 +117,6 @@ deploy_prod:
     - docker:dind
   script:
    - echo "Deploying to Production..."
-   #- docker-compose -f docker-compose.prod.yml -f docker-compose.prod.override.yml up -d --build
    - docker-compose -f docker-compose.prod.yml up -d --build
    - sleep 20               # wait for services to start
    - docker-compose ps
@@ -126,10 +124,12 @@ deploy_prod:
    - docker ps -a
    - docker-compose exec -T web curl -f http://web:80/ || (echo "Health check failed!" && exit 1)
    - docker-compose exec -T web curl -f http://web:80/docs || (echo "Docs endpoint check failed!" && exit 1)
+   - docker-compose exec -T web curl -v https://fastapi-traefik.prod-fastapi.ip-ddns.com
+   - docker-compose exec -T web curl -v https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com -u testuser:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1
    - echo "Deployment to Production successful!"
   environment:
     name: Production
-    url: http://prod-fastapi.ip-ddns.com
+    url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
   only:
     - main
   when: manual
