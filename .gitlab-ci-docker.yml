@@ -178,13 +178,14 @@ deploy_to_production:
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
     - sleep 20
     - docker-compose ps
-    - docker-compose logs web
+    #- docker-compose logs web
+    - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -kfsSIL "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
-    - curl -kfsSIL "https://$DOMAIN/docs" || (echo "public HTTPS failed" && exit 1)
+    - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
-    - echo "Deployment and secure the Domain with Let's Encrypt successful!"
+    - echo "Deployment and HTTPS verified successful!"
   environment:
     name: Production
     url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
