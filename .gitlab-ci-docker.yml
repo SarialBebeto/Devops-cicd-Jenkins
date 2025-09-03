@@ -166,7 +166,10 @@ deploy_to_production:
             - "/home/gitlab-runner/traefik-public-certificates:/certificates"
         web:
           labels:
+            - "traefik.enable=true"
             - "traefik.http.routers.fastapi.entrypoints=websecure"
+            - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`) && PathPrefix(`/`)"
+            - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
             - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
       EOF
     - export COMPOSE_HTTP_TIMEOUT=300
@@ -178,6 +181,7 @@ deploy_to_production:
     - docker-compose logs web
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -kfsSIL "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
+    - curl -kfsSIL "https://$DOMAIN/docs" || (echo "public HTTPS failed" && exit 1)
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
     - echo "Deployment and secure the Domain with Let's Encrypt successful!"
