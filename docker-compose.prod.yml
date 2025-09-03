@@ -56,7 +56,6 @@ services:
 
       # Persist certificates issued by Let's Encrypt
       - "./traefik-public-certificates:/certificates"   
-      # - "./traefik-public-certificates:/letsencrypt"
 
     command:
       # Enable Docker as a provider

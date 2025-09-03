@@ -158,6 +158,8 @@ deploy_to_production:
           ports:
             - "8000:80"
             - "8443:443"
+          volumes:
+            - ./certificates:/certificates
         web:
           labels:
             - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
