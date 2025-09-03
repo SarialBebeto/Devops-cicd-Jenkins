@@ -146,9 +146,10 @@ deploy_to_production:
       fi
     - docker-compose version
     - docker-compose -f docker-compose.prod.yml down
-    - mkdir -p ./certificates
-    - touch ./certificates/acme.json
-    - sudo chmod 600 ./certificates/acme.json
+    - mkdir -p ./traefik-public-certificates
+    - touch ./traefik-public-certificates/acme.json
+    - sudo chmod 600 ./traefik-public-certificates/acme.json
+    - sudo chmod 644 ./traefik-public-certificates/acme.json
   script:
     - echo "Deploying to Production (host Docker)"
     - |
@@ -158,8 +159,6 @@ deploy_to_production:
           ports:
             - "8000:80"
             - "8443:443"
-          volumes:
-            - ./certificates:/certificates
         web:
           labels:
             - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
