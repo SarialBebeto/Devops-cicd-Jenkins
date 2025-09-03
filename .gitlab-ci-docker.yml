@@ -136,10 +136,11 @@ deploy_prod:
     - main
   when: manual
 
+
 deploy_to_production:
   stage: secure_deploy_prod
   tags: 
-   - runner_fastapi_project_second
+    - runner_fastapi_project_second
   image: docker:27-cli
   before_script:
     - echo "Preparing Traefik certificate folder..."
@@ -147,7 +148,7 @@ deploy_to_production:
     - touch /home/gitlab-runner/traefik-public-certificates/acme.json
     - chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
-    - echo "Installing depencies"
+    - echo "Installing dependencies"
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y;
       fi
@@ -168,7 +169,7 @@ deploy_to_production:
           labels:
             - "traefik.enable=true"
             - "traefik.http.routers.fastapi.entrypoints=websecure"
-            - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`) && PathPrefix(`/`)"
+            - "traefik.http.routers.fastapi.rule=Host(\`fastapi-traefik.prod-fastapi.ip-ddns.com\`) && PathPrefix(\`/\`)"
             - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
             - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
       EOF
@@ -178,14 +179,13 @@ deploy_to_production:
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
     - sleep 20
     - docker-compose ps
-    #- docker-compose logs web
     - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -kfsSIL "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
-    - echo "Deployment and HTTPS verified successful!"
+    - echo "Deployment and HTTPS verified successfully!"
   environment:
     name: Production
     url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
