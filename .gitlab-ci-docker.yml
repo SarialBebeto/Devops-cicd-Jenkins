@@ -161,6 +161,8 @@ deploy_to_production:
       EOF
     - export COMPOSE_HTTP_TIMEOUT=300
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
     - sleep 20
     - docker-compose ps
     - docker-compose logs web
