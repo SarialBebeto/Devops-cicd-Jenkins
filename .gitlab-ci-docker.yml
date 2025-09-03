@@ -155,6 +155,9 @@ deploy_to_production:
           ports:
             - "8000:80"
             - "8443:443"
+        web:
+          labels:
+            - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
       EOF
     - export COMPOSE_HTTP_TIMEOUT=300
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
