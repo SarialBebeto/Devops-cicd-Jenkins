@@ -151,6 +151,10 @@ deploy_to_production:
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y;
       fi
+    - docker buildx version || (
+        mkdir -p ~/.docker/cli-plugins &&
+        curl -sSL https://github.com/docker/buildx/releases/latest/download/buildx-linux-amd64 -o ~/.docker/cli-plugins/docker-buildx &&
+        chmod +x ~/.docker/cli-plugins/docker-buildx)
     - docker-compose version
     - docker-compose -f docker-compose.prod.yml down
   script:
