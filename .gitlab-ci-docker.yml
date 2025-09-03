@@ -179,7 +179,7 @@ deploy_to_production:
     - curl -kfsSIL "https://$DOMAIN" || (echo "public HTTPS failed" && exit 1)
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
-    - echo "Deployment and security with Let's Encrypt successful!"
+    - echo "Deployment and secure the Domain with Let's Encrypt successful!"
   environment:
     name: Production
     url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
