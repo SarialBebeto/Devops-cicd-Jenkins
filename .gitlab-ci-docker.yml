@@ -169,7 +169,8 @@ deploy_to_production:
           labels:
             - "traefik.enable=true"
             - "traefik.http.routers.fastapi.entrypoints=websecure"
-            - "traefik.http.routers.fastapi.rule=Host(\`fastapi-traefik.prod-fastapi.ip-ddns.com\`) && PathPrefix(\`/\`)"
+            - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+            - "traefik.http.routers.fastapi.tls=true"
             - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
             - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
       EOF
@@ -180,8 +181,9 @@ deploy_to_production:
     - sleep 20
     - docker-compose ps
     - echo "Checking HTTPS on main app route"
+    - docker-compose exec traefik curl -vk https://web:8000/
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
-    - curl -kfsSIL "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
+    - curl -k "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
