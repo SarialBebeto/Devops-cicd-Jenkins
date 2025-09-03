@@ -1,1 +1,4 @@
 __pycache__
+
+# Traefik runtime certificates
+traefik-public-certificates/acme.json

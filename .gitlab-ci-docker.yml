@@ -141,19 +141,16 @@ deploy_to_production:
   image: docker:27-cli
   before_script:
     - echo "Installing depencies"
-    # - ls -l traefik-public-certificates/
-    # - sudo chown gitlab-runner:gitlab-runner traefik-public-certificates/acme.json
-    # - chmod 600 traefik-public-certificates/acme.json
     - sudo rm -f ./traefik-public-certificates/acme.json
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y;
       fi
     - docker-compose version
     - docker-compose -f docker-compose.prod.yml down
-    - mkdir -p ./traefik-public-certificates
-    - touch ./traefik-public-certificates/acme.json
-    - sudo chmod 600 ./traefik-public-certificates/acme.json
-    - sudo chmod 644 ./traefik-public-certificates/acme.json
+    # - mkdir -p ./traefik-public-certificates
+    # - touch ./traefik-public-certificates/acme.json
+    # - sudo chmod 600 ./traefik-public-certificates/acme.json
+    # - sudo chmod 644 ./traefik-public-certificates/acme.json
   script:
     - echo "Deploying to Production (host Docker)"
     - |
@@ -163,6 +160,8 @@ deploy_to_production:
           ports:
             - "8000:80"
             - "8443:443"
+          volumes:
+            - "/home/gitlab-runner/traefik-public-certificates:/certificates"
         web:
           labels:
             - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
