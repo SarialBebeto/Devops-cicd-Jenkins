@@ -10,6 +10,8 @@ variables:
   IMAGE_TAG: latest
   DOCKER_DRIVER: overlay2
   PYTHONPATH: .
+  GIT_STRATEGY: clone
+
 
 update:
   stage: update
@@ -151,7 +153,6 @@ deploy_to_production:
       fi
     - docker-compose version
     - docker-compose -f docker-compose.prod.yml down
- 
   script:
     - echo "Deploying to Production (host Docker)"
     - |
