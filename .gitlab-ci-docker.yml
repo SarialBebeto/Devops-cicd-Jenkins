@@ -151,7 +151,7 @@ deploy_to_production:
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y;
       fi
-    - docker buildx version || (
+      #- docker buildx version || (
         mkdir -p ~/.docker/cli-plugins &&
         curl -sSL https://github.com/docker/buildx/releases/latest/download/buildx-linux-amd64 -o ~/.docker/cli-plugins/docker-buildx &&
         chmod +x ~/.docker/cli-plugins/docker-buildx)
@@ -181,7 +181,8 @@ deploy_to_production:
     - docker-compose logs web
     # Public HTTPS checks (from CI runner to your domain)
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
-    - curl -kfsSIL "https://$DOMAIN" || (echo "public HTTPS failed" && exit 1)
+    - curl -kfsSIL "https://$DOMAIN/docs" || (echo "public HTTPS failed" && exit 1)
+    - curl -kfsSIL "https://$DOMAIN/health" || (echo "public HTTPS failed" && exit 1)
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
     - echo "Deployment and secure the Domain with Let's Encrypt successful!"
