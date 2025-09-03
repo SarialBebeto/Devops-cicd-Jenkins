@@ -141,9 +141,10 @@ deploy_to_production:
   image: docker:27-cli
   before_script:
     - echo "Installing depencies"
-    - ls -l traefik-public-certificates/
-    - sudo chown gitlab-runner:gitlab-runner traefik-public-certificates/acme.json
-    - chmod 600 traefik-public-certificates/acme.json
+    # - ls -l traefik-public-certificates/
+    # - sudo chown gitlab-runner:gitlab-runner traefik-public-certificates/acme.json
+    # - chmod 600 traefik-public-certificates/acme.json
+    - sudo rm -f ./traefik-public-certificates/acme.json
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y;
       fi
