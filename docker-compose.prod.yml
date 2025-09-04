@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    #command: > 
-    # uvicorn app.main:app --host 0.0.0.0 --port 80
     expose:
       - 80
     environment:
@@ -26,7 +24,7 @@ services:
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
 
       # Ensure traffic gets forwarde to the app's exposed port 80
-      #- "traefik.http.services.fastapi.loadbalancer.server.port=80"
+      - "traefik.http.services.fastapi.loadbalancer.server.port=80"
 
   db:
     image: postgres:15-alpine
