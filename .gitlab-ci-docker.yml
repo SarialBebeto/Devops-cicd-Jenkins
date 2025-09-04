@@ -160,7 +160,7 @@ app_security:
       fi
     - if ! docker buildx inspect mybuilder &>/dev/null; then
        docker buildx create --name mybuilder && \
-       docker buildx inspect mybuilder --bootstrap; \
+       docker buildx inspect mybuilder --bootstrap; 
       fi
     - docker-compose version
     - docker buildx version
