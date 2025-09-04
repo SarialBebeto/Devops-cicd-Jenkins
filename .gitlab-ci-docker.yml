@@ -173,7 +173,7 @@ deploy_to_production:
             - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
             - "traefik.http.routers.fastapi.tls=true"
             - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
-            - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
+            - "traefik.http.services.fastapi.loadbalancer.server.port=80"
       EOF
     - export COMPOSE_HTTP_TIMEOUT=300
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
