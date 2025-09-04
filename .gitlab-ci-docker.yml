@@ -24,6 +24,7 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
+  when: manual
 
 build:
   stage: build
@@ -181,7 +182,7 @@ deploy_to_production:
     - sleep 20
     - docker-compose ps
     - echo "Checking HTTPS on main app route"
-    - docker-compose exec traefik curl -vk https://web:8000/
+    - docker-compose exec traefik curl -vk https://web:80/
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -k "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
