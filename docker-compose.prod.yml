@@ -1,11 +1,8 @@
-# version: '3.8'
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    #command: > 
-    # uvicorn app.main:app --host 0.0.0.0 --port 80
     expose:
       - 80
     environment:
@@ -26,7 +23,7 @@ services:
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
 
       # Ensure traffic gets forwarde to the app's exposed port 80
-      #- "traefik.http.services.fastapi.loadbalancer.server.port=80"
+      - "traefik.http.services.fastapi.loadbalancer.server.port=80"
 
   db:
     image: postgres:15-alpine
@@ -54,7 +51,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./traefik-public-certificates:/certificates"   
-
     command:
       # Enable Docker as a provider
       - "--providers.docker=true"
@@ -73,7 +69,6 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=tsamosarial@yahoo.fr"  
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-
     labels:
       - "traefik.enable=true"
 
@@ -86,7 +81,6 @@ services:
       # Password protect the dashboard
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1"
-
 volumes:
   postgres_data_prod:
   traefik-public-certificates:
