@@ -150,12 +150,11 @@ app_security:
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
     - echo "Installing dependencies"
     - if ! command -v docker-compose &> /dev/null; then
-         sudo apt-get install docker-compose -y;
+         sudo apt-get install docker-compose -y && sudo apt-get update -y;
       fi
     - docker-compose version
     - if ! docker buildx version &> /dev/null; then
-        echo "Enabling Docker Buildx..."
-        docker buildx create --use
+        docker buildx create --use;
       fi
     - docker-compose version
     - docker buildx version
