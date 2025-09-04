@@ -177,6 +177,8 @@ app_security:
             - "8443:443"
           volumes:
             - "/home/gitlab-runner/traefik-public-certificates:/certificates"
+          labels:
+            - "traefik.http.routers.dashboard.entrypoints=websecure"
         web:
           labels:
             - "traefik.enable=true"
