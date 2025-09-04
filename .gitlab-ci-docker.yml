@@ -140,8 +140,8 @@ deploy_prod:
 
 deploy_to_production:
   stage: secure_deploy_prod
-  #tags: 
-  #  - runner_fastapi_project_second
+  tags: 
+    - runner_fastapi_project_second
   image: docker:27-cli
   before_script:
     - echo "Preparing Traefik certificate folder..."
