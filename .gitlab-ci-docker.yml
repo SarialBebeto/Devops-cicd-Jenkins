@@ -153,7 +153,7 @@ app_security:
          sudo apt-get install docker-compose -y && sudo apt-get update -y;
       fi
     - docker-compose version
-    - apk add --no-cache bash curl coreutils
+    - sudo apt-get install -y bash curl coreutils
     - if ! docker buildx version &> /dev/null; then \
         mkdir -p ~/.docker/cli-plugins && \
         curl -sSL "https://github.com/docker/buildx/releases/latest/download/buildx-$(uname -s)-$(uname -m)" -o ~/.docker/cli-plugins/docker-buildx && \
