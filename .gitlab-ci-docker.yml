@@ -173,15 +173,21 @@ app_security:
       services:
         traefik:
           ports:
-            - "8000:80"
-            - "8443:443"
+            - "80:80"
+            - "443:443"
           volumes:
-            - "/home/gitlab-runner/traefik-public-certificates:/certificates"
+            - "/home/gitlab-runner/traefik-public-certificates:/lettsencrypt"
           labels:
             - "traefik.http.routers.dashboard.entrypoints=websecure"
+            - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+            - "traefik.http.routers.dashboard.tls=true"
+            - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.dashboard.service=api@internal"
+
         web:
           labels:
             - "traefik.enable=true"
+            - "traefik.http.routers.fastapi.entrypoints=web"
             - "traefik.http.routers.fastapi.entrypoints=websecure"
             - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
             - "traefik.http.routers.fastapi.tls=true"
