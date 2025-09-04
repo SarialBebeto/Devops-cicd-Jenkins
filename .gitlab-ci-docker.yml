@@ -153,6 +153,12 @@ app_Security:
          sudo apt-get install docker-compose -y;
       fi
     - docker-compose version
+    - if ! docker buildx version &> /dev/null; then
+         echo "Enabling Docker Buildx..."
+         docker buildx create --use
+      fi
+    - docker-compose version
+    - docker buildx version
     - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
