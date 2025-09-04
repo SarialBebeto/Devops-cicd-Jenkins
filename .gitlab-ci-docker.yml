@@ -154,17 +154,17 @@ app_security:
       fi
     - docker-compose version
     - sudo apt-get install -y bash curl coreutils
-    - if ! docker buildx version &> /dev/null; then \
-        mkdir -p ~/.docker/cli-plugins && \
-        curl -sSL "https://github.com/docker/buildx/releases/latest/download/buildx-$(uname -s)-$(uname -m)" -o ~/.docker/cli-plugins/docker-buildx && \
-        chmod +x ~/.docker/cli-plugins/docker-buildx; 
-      fi
-    - if ! docker buildx inspect mybuilder &>/dev/null; then
-       docker buildx create mybuilder && \
-       docker buildx inspect mybuilder --bootstrap; 
-      fi
+    #- if ! docker buildx version &> /dev/null; then \
+    #    mkdir -p ~/.docker/cli-plugins && \
+    #    curl -sSL "https://github.com/docker/buildx/releases/latest/download/buildx-$(uname -s)-$(uname -m)" -o ~/.docker/cli-plugins/docker-buildx && \
+    #    chmod +x ~/.docker/cli-plugins/docker-buildx; 
+    #  fi
+    #- if ! docker buildx inspect mybuilder &>/dev/null; then
+    #   docker buildx create mybuilder && \
+    #   docker buildx inspect mybuilder --bootstrap; 
+    #  fi
     - docker-compose version
-    - docker buildx version
+    #- docker buildx version
     - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
