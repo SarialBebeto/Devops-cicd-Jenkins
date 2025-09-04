@@ -23,7 +23,7 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
-  when: manual
+  
 
 build:
   stage: build
@@ -137,7 +137,7 @@ deploy_prod:
   when: manual
 
 
-app_Security:
+app_security:
   stage: deploy_prod
   tags: 
     - runner_fastapi_project
@@ -154,8 +154,8 @@ app_Security:
       fi
     - docker-compose version
     - if ! docker buildx version &> /dev/null; then
-         echo "Enabling Docker Buildx..."
-         docker buildx create --use
+        echo "Enabling Docker Buildx..."
+        docker buildx create --use
       fi
     - docker-compose version
     - docker buildx version
