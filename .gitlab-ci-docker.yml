@@ -156,7 +156,7 @@ app_security:
     - if ! docker buildx version &> /dev/null; then \
         mkdir -p ~/.docker/cli-plugins && \
         curl -sSL "https://github.com/docker/buildx/releases/latest/download/buildx-$(uname -s)-$(uname -m)" -o ~/.docker/cli-plugins/docker-buildx && \
-        chmod +x ~/.docker/cli-plugins/docker-buildx; \
+        chmod +x ~/.docker/cli-plugins/docker-buildx; 
       fi
     - if ! docker buildx inspect mybuilder &>/dev/null; then
        docker buildx create --name mybuilder && \
