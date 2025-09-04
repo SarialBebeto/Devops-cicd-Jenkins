@@ -4,7 +4,6 @@ stages:
   - test
   - deploy_dev
   - deploy_prod
-  - secure_deploy_prod
 
 variables:
   IMAGE_TAG: latest
@@ -138,8 +137,8 @@ deploy_prod:
   when: manual
 
 
-deploy_to_production:
-  stage: secure_deploy_prod
+app_Security:
+  stage: deploy_prod
   tags: 
     - runner_fastapi_project
   image: docker:27-cli
@@ -183,13 +182,12 @@ deploy_to_production:
     - docker-compose ps
     - docker-compose logs traefik | grep acme
     - echo "Checking HTTPS on main app route"
-    #- docker-compose exec traefik curl -vk https://web:80/
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -I "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
     - curl -k "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
-    #-curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
+    -curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
     - echo "Deployment and HTTPS verified successfully!"
   environment:
     name: Production
