@@ -163,7 +163,7 @@ app_security:
   script:
     - echo "Deploying to Production (host Docker)"
     - |
-      cat > docker-compose.override.yml <<EOF
+      cat > docker-compose.override.yml <<'EOF'
       services:
         traefik:
           ports:
