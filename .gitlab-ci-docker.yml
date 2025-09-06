@@ -144,6 +144,10 @@ app_security:
   image: docker:27-cli
   before_script:
     - echo "Preparing Traefik certificate folder..."
+    - sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/builds/jWguLSRx7/0/studies25/devops-project/traefik-public-certificates
+    - sudo chmod -R 700 /home/gitlab-runner/builds/jWguLSRx7/0/studies25/devops-project/traefik-public-certificates
+    - sudo chmod -R 600 /home/gitlab-runner/builds/jWguLSRx7/0/studies25/devops-project/traefik-public-certificates
+    - sudo chmod -R 644 /home/gitlab-runner/builds/jWguLSRx7/0/studies25/devops-project/traefik-public-certificates
     - mkdir -p /home/gitlab-runner/traefik-public-certificates
     - sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
