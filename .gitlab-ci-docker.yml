@@ -148,6 +148,8 @@ app_security:
     - touch /home/gitlab-runner/traefik-public-certificates/acme.json
     - chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
+    - ls -l /home/gitlab-runner/traefik-public-certificates
+    - nano /home/gitlab-runner/traefik-public-certificates/acme.json
     - echo "Installing dependencies"
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y && sudo apt-get update -y;
@@ -163,8 +165,6 @@ app_security:
     #   docker buildx create mybuilder && \
     #   docker buildx inspect mybuilder --bootstrap; 
     #  fi
-    - docker-compose version
-    #- docker buildx version
     - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
@@ -176,7 +176,7 @@ app_security:
             - "80:80"
             - "443:443"
           volumes:
-            - "/home/gitlab-runner/traefik-public-certificates:/lettsencrypt"
+            - "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
           labels:
             - "traefik.http.routers.dashboard.entrypoints=websecure"
             - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)"
@@ -198,6 +198,10 @@ app_security:
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
+    - nano /tmp/merged.yml
+    - CID=docker-compose -f docker-compose.yml -f docker-compose.override.yml ps -q traefik
+    - docker inspect --format '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}};{{end}}' $CID
     - sleep 20
     - docker-compose ps
     - docker-compose logs traefik | grep acme
