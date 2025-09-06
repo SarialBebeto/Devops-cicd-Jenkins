@@ -138,7 +138,6 @@ deploy_prod:
     - main
   when: manual
 
-
 app_security:
   stage: deploy_prod
   tags: 
@@ -177,6 +176,7 @@ app_security:
             - "traefik.http.routers.dashboard.tls=true"
             - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
             - "traefik.http.routers.dashboard.service=api@internal"
+            - "traefik.enable=true"
 
         web:
           labels:
@@ -198,14 +198,15 @@ app_security:
     - docker inspect --format '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}};{{end}}' $CID
     - sleep 20
     - docker-compose ps
-    #- docker-compose logs traefik | grep acme
+    - docker-compose logs traefik #| grep acme
     - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
-    - curl -I "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
+    - curl -vI "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
     - curl -k "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
+    - curl -vI "http://dashboard-$DOMAIN/.well-known/acme-challenge/TEST"
     - echo "Deployment and HTTPS verified successfully!"
   environment:
     name: Production
