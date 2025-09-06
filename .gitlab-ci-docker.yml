@@ -198,7 +198,7 @@ app_security:
     - docker inspect --format '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}};{{end}}' $CID
     - sleep 20
     - docker-compose ps
-    - docker-compose logs traefik | grep acme
+    #- docker-compose logs traefik | grep acme
     - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -I "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
