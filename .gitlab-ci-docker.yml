@@ -100,7 +100,8 @@ deploy_dev:
   script:
    - echo "Deploying to Dev..."
    - docker-compose -f docker-compose.yml up -d --build
-   - sleep 15 # wait for services to start
+    # wait for services to start
+   - sleep 15 
    - docker-compose ps
    - docker-compose logs web
    - docker-compose exec -T web curl -f http://web:8000/ || (echo "Health check failed!" && exit 1)
@@ -122,7 +123,8 @@ deploy_prod:
   script:
    - echo "Deploying to Production..."
    - docker-compose -f docker-compose.prod.yml up -d --build
-   - sleep 20               # wait for services to start
+    # wait for services to start
+   - sleep 20              
    - docker-compose ps
    - docker-compose logs web
    - docker ps -a
