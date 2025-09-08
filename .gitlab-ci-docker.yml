@@ -140,7 +140,7 @@ deploy_prod:
 
 secure_prod:
   stage: deploy_prod
-  image: docker:lastest
+  image: docker:latest
   services:
     - docker:dind
   before_script:
