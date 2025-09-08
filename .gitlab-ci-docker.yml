@@ -172,15 +172,22 @@ secure_prod:
             - "traefik.http.routers.web-secure-redirect.entrypoints=web"
             - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
             - "traefik.http.routers.web-secure-redirect.middlewares=redirect-to-https"
+            - "traefik.http.services.web.loadbalancer.server.port=80"
       EOF
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build 
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
     - docker ps -a
-    - sleep 20
+    - sleep 90
+    - docker-compose ps
+    - docker-compose logs traefik
+    - docker-compose logs db
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
     - cat /tmp/merged.yml
-    - docker-compose logs traefik | grep -i acme
+    - docker-compose logs traefik | grep acme
+    - echo "Test FastAPI inside the container..."
+    - docker-compose exec -T web curl -f http://web:80/ || (echo "Internal health check failed!" && exit 1)
+    - docker exec -it devops-project-web-1 curl -vk http://localhost:80/docs
     - echo "Checking HTTPS..."
     - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ip-ddns.com | openssl x509 -noout -issuer -subject -dates
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
