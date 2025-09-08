@@ -24,3 +24,11 @@ dashboard = true
   storage = "/letsencrypt/acme.json"
   [certificatesResolvers.letsencrypt.acme.httpChallenge]
     entryPoint = "web"
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: tsamosarial@yahoo.fr
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
