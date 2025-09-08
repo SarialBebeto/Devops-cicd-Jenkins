@@ -22,7 +22,7 @@ services:
       # Use Let's Encrypt resolver
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
 
-      # Ensure traffic gets forwarde to the app's exposed port 80
+      # Ensure traffic gets forward to the app's exposed port 80
       - "traefik.http.services.fastapi.loadbalancer.server.port=80"
 
   db:
@@ -61,8 +61,8 @@ services:
       - "--entrypoints.websecure.address=:443"
 
       # Redirect all HTTP to HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      #- "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      #- "--entrypoints.web.http.redirections.entrypoint.scheme=https"
 
       # TLS certificate resolver
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"

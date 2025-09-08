@@ -199,9 +199,11 @@ app_security:
     - sleep 20
     - docker-compose ps
     - docker-compose logs traefik #| grep acme
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config | grep -E "redirections.entrypoint"
     - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -vI "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
+    - curl -vI http://$DOMAIN/.well-known/acme-challenge/TEST
     - curl -k "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
