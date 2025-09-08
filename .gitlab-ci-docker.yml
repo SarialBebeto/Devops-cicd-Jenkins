@@ -186,7 +186,7 @@ secure_prod:
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
     - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com 2>&1 | grep "issuer"
-    - curl -sI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
+    - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com
     - echo "HTTPS enabled and secure headers applied!"
   environment:
    name: Production
