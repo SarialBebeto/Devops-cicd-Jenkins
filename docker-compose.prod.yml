@@ -46,8 +46,8 @@ services:
       context: .
       dockerfile: Dockerfile.traefik
     ports:
-      - 80:80   # HTTP
-      - 443:443 # HTTPS
+      - 80:80   
+      - 443:443 
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       #- "./traefik-public-certificates:/certificates"   
@@ -71,17 +71,17 @@ services:
       #- "--entrypoints.web.http.redirections.entrypoint.scheme=https"
 
       # TLS certificate resolver
-      #- "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      #- "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudns"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      #- "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudns"
       - "--certificatesresolvers.letsencrypt.acme.email=tsamosarial@yahoo.fr"  
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     labels:
       - "traefik.enable=true"
 
       # Protect Traefik dashboard behind the domain
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)" #" && PathPrefix(`/`)"
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)" 
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"

@@ -150,14 +150,12 @@ app_security:
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
     - sudo touch /home/gitlab-runner/traefik-public-certificates/acme.json
     - sudo chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
-    #- sudo chown 65532:65532 /home/gitlab-runner/traefik-public-certificates/acme.json
     - ls -l /home/gitlab-runner/traefik-public-certificates
     - cat /home/gitlab-runner/traefik-public-certificates/acme.json
     - echo "Installing dependencies"
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y && sudo apt-get update -y;
       fi
-    - docker-compose version
     - sudo apt-get install -y bash curl coreutils
     - docker-compose -f docker-compose.prod.yml down
   script:
