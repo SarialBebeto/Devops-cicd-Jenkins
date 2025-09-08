@@ -84,7 +84,6 @@ docker_pipeline:
   trigger:
     include: .gitlab-ci-docker.yml
     strategy: depend
-  when: manual # just for testing purposes
 
 k8s_pipeline_dev:
   stage: deploy
