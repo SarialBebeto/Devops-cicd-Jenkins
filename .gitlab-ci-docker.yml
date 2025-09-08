@@ -142,14 +142,14 @@ secure_prod:
   stage: deploy_prod
   image: docker:lastest
   services:
-   - docker:dind
+    - docker:dind
   before_script:
     - mkdir -p traefik/letsencrypt
     - touch traefik/letsencrypt/acme.json
     - chmod 600 traefik/letsencrypt/acme.json
   script:
-   - echo "Securing Production with HTTPS..."
-   - |
+    - echo "Securing Production with HTTPS..."
+    - |
       cat > docker-compose.override.yml <<'EOF'
       web:
         labels:
@@ -161,11 +161,15 @@ secure_prod:
           - "traefik.http.routers.web-secure-redirect.entrypoints=web"
           - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
           - "traefik.http.routers.web-secure-redirect.middlewares=redirect-to-https"
-   - docker-compose -f docker-compose.prod.yml up -d --build 
-   - sleep 15
-   - echo "Checking HTTPS..."
-   - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
-   - echo "HTTPS enabled and secure headers applied!"
+      EOF
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build 
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
+    - sleep 20
+    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
+    - cat /tmp/merged.yml
+    - echo "Checking HTTPS..."
+    - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
+    - echo "HTTPS enabled and secure headers applied!"
   environment:
    name: Production
    url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
