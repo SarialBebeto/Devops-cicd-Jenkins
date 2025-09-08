@@ -182,8 +182,8 @@ secure_prod:
     - cat /tmp/merged.yml
     - docker-compose logs traefik | grep -i acme
     - echo "Checking HTTPS..."
-    - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
     - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ip-ddns.com | openssl x509 -noout -issuer -subject -dates
+    - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
     - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com 2>&1 | grep "issuer"
     - curl -sI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
