@@ -53,6 +53,10 @@ services:
       #- "./traefik-public-certificates:/certificates"   
       #- "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
       - "./traefik-public-certificates:/letsencrypt:rw" 
+    environment:
+      - CLOUDNS_AUTH_ID=${CLOUDNS_AUTH_ID}
+      - CLOUDNS_AUTH_PASSWORD=${CLOUDNS_AUTH_PASSWORD}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     command:
       # Enable Docker as a provider
       - "--providers.docker=true"
