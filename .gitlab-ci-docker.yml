@@ -199,7 +199,7 @@ app_security:
     - sleep 20
     - docker-compose ps
     - docker-compose logs traefik #| grep acme
-    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config | grep -E "redirections.entrypoint"
+    #- docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config | grep -E "redirections.entrypoint"
     - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -vI "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
