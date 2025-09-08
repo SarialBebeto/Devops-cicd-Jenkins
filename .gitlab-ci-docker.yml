@@ -147,6 +147,7 @@ secure_prod:
     - mkdir -p traefik/letsencrypt
     - touch traefik/letsencrypt/acme.json
     - chmod 600 traefik/letsencrypt/acme.json
+    - apk add --no-cache curl
   script:
     - echo "Securing Production with HTTPS..."
     - |
