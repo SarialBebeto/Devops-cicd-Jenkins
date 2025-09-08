@@ -51,7 +51,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       #- "./traefik-public-certificates:/certificates"   
-      #- "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
       - "./traefik-public-certificates:/letsencrypt:rw" 
     environment:
       - CLOUDNS_AUTH_ID=${CLOUDNS_AUTH_ID}
@@ -65,6 +64,8 @@ services:
       # Enable entrypoints for HTTP and HTTPS
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--log.level=INFO"
+      - "--api.dashboard=true"
 
       # Redirect all HTTP to HTTPS
       #- "--entrypoints.web.http.redirections.entrypoint.to=websecure"
@@ -73,8 +74,6 @@ services:
       # TLS certificate resolver
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      #- "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
-      #- "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudns"
       - "--certificatesresolvers.letsencrypt.acme.email=tsamosarial@yahoo.fr"  
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     labels:
