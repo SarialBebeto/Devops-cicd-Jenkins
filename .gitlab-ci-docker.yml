@@ -151,16 +151,17 @@ secure_prod:
     - echo "Securing Production with HTTPS..."
     - |
       cat > docker-compose.override.yml <<'EOF'
-      web:
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.web.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
-          - "traefik.http.routers.web.entrypoints=websecure"
-          - "traefik.http.routers.web.tls.certresolver=myresolver"
-          - "traefik.http.routers.web.middlewares=secure-headers"
-          - "traefik.http.routers.web-secure-redirect.entrypoints=web"
-          - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
-          - "traefik.http.routers.web-secure-redirect.middlewares=redirect-to-https"
+      services:
+        web:
+          labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.web.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+            - "traefik.http.routers.web.entrypoints=websecure"
+            - "traefik.http.routers.web.tls.certresolver=myresolver"
+            - "traefik.http.routers.web.middlewares=secure-headers"
+            - "traefik.http.routers.web-secure-redirect.entrypoints=web"
+            - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+            - "traefik.http.routers.web-secure-redirect.middlewares=redirect-to-https"
       EOF
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build 
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
