@@ -152,9 +152,9 @@ secure_prod:
     - echo "Preparing Traefik certificate folder..."
     - mkdir -p /home/gitlab-runner/traefik-public-certificates
     - touch /home/gitlab-runner/traefik-public-certificates/acme.json
-    - sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
+    - chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
-    - sudo chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
+    - chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
     - apk add --no-cache curl bash
     #- sudo lsof -i :80
   script:
@@ -195,80 +195,80 @@ secure_prod:
    - main
   when: manual
 
-app_security:
-  stage: deploy_prod
-  tags: 
-    - runner_fastapi_project # a shell runner to run this job
-  image: docker:27-cli
-  before_script:
-    - echo "Preparing Traefik certificate folder..."
-    - mkdir -p /home/gitlab-runner/traefik-public-certificates
-    - sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
-    - chmod 700 /home/gitlab-runner/traefik-public-certificates
-    - sudo touch /home/gitlab-runner/traefik-public-certificates/acme.json
-    - sudo chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
-    - ls -l /home/gitlab-runner/traefik-public-certificates
-    - cat /home/gitlab-runner/traefik-public-certificates/acme.json
-    - echo "Installing dependencies"
-    - if ! command -v docker-compose &> /dev/null; then
-         sudo apt-get install docker-compose -y && sudo apt-get update -y;
-      fi
-    - sudo apt-get install -y bash curl coreutils
-    - docker-compose -f docker-compose.prod.yml down
-  script:
-    - echo "Deploying to Production (host Docker)"
-    - |
-      cat > docker-compose.override.yml <<'EOF'
-      services:
-        traefik:
-          ports:
-            - "80:80"
-            - "443:443"
-          volumes:
-            - "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
-          labels:
-            - "traefik.http.routers.dashboard.entrypoints=websecure"
-            - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)"
-            - "traefik.http.routers.dashboard.tls=true"
-            - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-            - "traefik.http.routers.dashboard.service=api@internal"
-            - "traefik.enable=true"
+# app_security:
+#   stage: deploy_prod
+#   tags: 
+#     - runner_fastapi_project # a shell runner to run this job
+#   image: docker:27-cli
+#   before_script:
+#     - echo "Preparing Traefik certificate folder..."
+#     - mkdir -p /home/gitlab-runner/traefik-public-certificates
+#     - sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
+#     - chmod 700 /home/gitlab-runner/traefik-public-certificates
+#     - sudo touch /home/gitlab-runner/traefik-public-certificates/acme.json
+#     - sudo chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
+#     - ls -l /home/gitlab-runner/traefik-public-certificates
+#     - cat /home/gitlab-runner/traefik-public-certificates/acme.json
+#     - echo "Installing dependencies"
+#     - if ! command -v docker-compose &> /dev/null; then
+#          sudo apt-get install docker-compose -y && sudo apt-get update -y;
+#       fi
+#     - sudo apt-get install -y bash curl coreutils
+#     - docker-compose -f docker-compose.prod.yml down
+#   script:
+#     - echo "Deploying to Production (host Docker)"
+#     - |
+#       cat > docker-compose.override.yml <<'EOF'
+#       services:
+#         traefik:
+#           ports:
+#             - "80:80"
+#             - "443:443"
+#           volumes:
+#             - "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
+#           labels:
+#             - "traefik.http.routers.dashboard.entrypoints=websecure"
+#             - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+#             - "traefik.http.routers.dashboard.tls=true"
+#             - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+#             - "traefik.http.routers.dashboard.service=api@internal"
+#             - "traefik.enable=true"
 
-        web:
-          labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.fastapi.entrypoints=web"
-            - "traefik.http.routers.fastapi.entrypoints=websecure"
-            - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
-            - "traefik.http.routers.fastapi.tls=true"
-            - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
-            - "traefik.http.services.fastapi.loadbalancer.server.port=80"
-      EOF
-    - export COMPOSE_HTTP_TIMEOUT=300
-    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
-    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
-    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
-    - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
-    - cat /tmp/merged.yml
-    - CID=$(docker-compose -f docker-compose.yml -f docker-compose.override.yml ps -q traefik)
-    - docker inspect --format '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}};{{end}}' $CID
-    - sleep 90
-    - docker-compose ps
-    - docker-compose logs traefik 
-    - echo "Checking HTTPS on main app route"
-    - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
-    - curl -vk "http://$DOMAIN:80" || (echo "public HTTP failed" && exit 1) || true
-    - curl -vk http://$DOMAIN/.well-known/acme-challenge/TEST
-    - curl -k "https://$DOMAIN:80" || (echo "public HTTPS failed" && exit 1)
-    - echo "Check SSL certificate info"
-    - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
-    #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
-    - curl -vk "https://dashboard-$DOMAIN/" || true
-    - curl -vI "http://dashboard-$DOMAIN/.well-known/acme-challenge/TEST"
-    - echo "Deployment and HTTPS verified successfully!"
-  environment:
-    name: Production
-    url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
-  only:
-    - main
-  when: manual
+#         web:
+#           labels:
+#             - "traefik.enable=true"
+#             - "traefik.http.routers.fastapi.entrypoints=web"
+#             - "traefik.http.routers.fastapi.entrypoints=websecure"
+#             - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+#             - "traefik.http.routers.fastapi.tls=true"
+#             - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+#             - "traefik.http.services.fastapi.loadbalancer.server.port=80"
+#       EOF
+#     - export COMPOSE_HTTP_TIMEOUT=300
+#     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
+#     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
+#     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
+#     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
+#     - cat /tmp/merged.yml
+#     - CID=$(docker-compose -f docker-compose.yml -f docker-compose.override.yml ps -q traefik)
+#     - docker inspect --format '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}};{{end}}' $CID
+#     - sleep 90
+#     - docker-compose ps
+#     - docker-compose logs traefik 
+#     - echo "Checking HTTPS on main app route"
+#     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
+#     - curl -vk "http://$DOMAIN:80" || (echo "public HTTP failed" && exit 1) || true
+#     - curl -vk http://$DOMAIN/.well-known/acme-challenge/TEST
+#     - curl -k "https://$DOMAIN:80" || (echo "public HTTPS failed" && exit 1)
+#     - echo "Check SSL certificate info"
+#     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
+#     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
+#     - curl -vk "https://dashboard-$DOMAIN/" || true
+#     - curl -vI "http://dashboard-$DOMAIN/.well-known/acme-challenge/TEST"
+#     - echo "Deployment and HTTPS verified successfully!"
+#   environment:
+#     name: Production
+#     url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
+#   only:
+#     - main
+#   when: manual
