@@ -51,11 +51,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       #- "./traefik-public-certificates:/certificates"   
-      - "./traefik-public-certificates:/letsencrypt:rw" 
-    environment:
-      - CLOUDNS_AUTH_ID=${CLOUDNS_AUTH_ID}
-      - CLOUDNS_AUTH_PASSWORD=${CLOUDNS_AUTH_PASSWORD}
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - "./traefik-public-certificates:/letsencrypt" 
     command:
       # Enable Docker as a provider
       - "--providers.docker=true"
@@ -66,6 +62,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--log.level=INFO"
       - "--api.dashboard=true"
+      - "--accesslog=true"
 
       # Redirect all HTTP to HTTPS
       #- "--entrypoints.web.http.redirections.entrypoint.to=websecure"
@@ -88,6 +85,13 @@ services:
       # Password protect the dashboard
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1"
+
+      # Security headers
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.secure-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.secure-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.secure-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.secure-headers.headers.referrerPolicy=same-origin"
 volumes:
   postgres_data_prod:
   traefik-public-certificates:
