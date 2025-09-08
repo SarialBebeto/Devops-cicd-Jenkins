@@ -23,6 +23,7 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
+  when: manual
   
 
 build:
@@ -169,8 +170,11 @@ secure_prod:
     - sleep 20
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
     - cat /tmp/merged.yml
+    - docker-compose logs traefik | grep -i acme
     - echo "Checking HTTPS..."
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
+    - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ip-ddns.com | openssl x509 -noout -issuer -subject -dates
+    - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
     - echo "HTTPS enabled and secure headers applied!"
   environment:
    name: Production
