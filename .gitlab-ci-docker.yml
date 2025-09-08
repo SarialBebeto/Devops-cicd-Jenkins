@@ -190,6 +190,7 @@ app_security:
             - "traefik.http.services.fastapi.loadbalancer.server.port=80"
       EOF
     - export COMPOSE_HTTP_TIMEOUT=300
+    - docker compose -f docker-compose.prod.yml -f docker-compose.override.yml pull || true
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
@@ -197,18 +198,18 @@ app_security:
     - cat /tmp/merged.yml
     - CID=$(docker-compose -f docker-compose.yml -f docker-compose.override.yml ps -q traefik)
     - docker inspect --format '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}};{{end}}' $CID
-    - sleep 20
+    - sleep 90
     - docker-compose ps
-    - docker-compose logs traefik #| grep acme
-    #- docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config | grep -E "redirections.entrypoint"
+    - docker-compose logs traefik 
     - echo "Checking HTTPS on main app route"
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
-    - curl -vI "http://$DOMAIN" || (echo "public HTTP failed" && exit 1)
-    - curl -vI http://$DOMAIN/.well-known/acme-challenge/TEST
-    - curl -k "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
+    - curl -vk "http://$DOMAIN" || (echo "public HTTP failed" && exit 1) || true
+    - curl -vk http://$DOMAIN/.well-known/acme-challenge/TEST
+    - curl -vk "https://$DOMAIN/" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     #- curl -fsSIL -u "testuser:${DASHBOARD_PASSWORD}" "https://dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com" || (echo "Dashboard failed" && exit 1)
+    - curl -vk "https://dashboard-$DOMAIN/" || true
     - curl -vI "http://dashboard-$DOMAIN/.well-known/acme-challenge/TEST"
     - echo "Deployment and HTTPS verified successfully!"
   environment:

@@ -45,13 +45,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.traefik
+      restart: unless-stopped
     ports:
       - 80:80   # HTTP
       - 443:443 # HTTPS
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       #- "./traefik-public-certificates:/certificates"   
-      - "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
+      #- "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
+      - "./traefik-public-certificates:/letsencrypt:rw" 
     command:
       # Enable Docker as a provider
       - "--providers.docker=true"
@@ -68,6 +70,7 @@ services:
       # TLS certificate resolver
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudns"
       - "--certificatesresolvers.letsencrypt.acme.email=tsamosarial@yahoo.fr"  
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     labels:
