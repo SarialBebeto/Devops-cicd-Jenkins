@@ -152,7 +152,7 @@ secure_prod:
     - echo "Preparing Traefik certificate folder..."
     - mkdir -p /home/gitlab-runner/traefik-public-certificates
     - touch /home/gitlab-runner/traefik-public-certificates/acme.json
-    - chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
+    #- chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
     - chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
     - apk add --no-cache curl bash
