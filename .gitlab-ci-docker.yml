@@ -223,7 +223,7 @@ deploy_prod:
 app_security:
   stage: deploy_prod
   tags: 
-    - runner_fastapi_project # a shell runner to run this job
+    - traefik-fastapi-project # a shell runner to run this job
   image: docker:27-cli
   before_script:
     - echo "Preparing Traefik certificate folder..."
