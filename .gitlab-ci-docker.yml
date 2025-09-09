@@ -146,11 +146,11 @@ secure_prod:
     - traefik-fastapi-project       # a shell runner to run this job
   before_script:
     - echo "Preparing Traefik certificate folder..."
-    - mkdir -p /home/gitlab-runner/traefik-public-certificates
-    - chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
-    - touch /home/gitlab-runner/traefik-public-certificates/acme.json
-    - chmod 700 /home/gitlab-runner/traefik-public-certificates
-    - chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
+    - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
+    - chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/traefik-public-certificates
+    - touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
+    - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
+    - chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
   script:
     - echo "Installing dependencies"
     - docker-compose -f docker-compose.prod.yml down
