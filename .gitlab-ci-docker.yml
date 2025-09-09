@@ -227,6 +227,7 @@ app_security:
   image: docker:27-cli
   before_script:
     - echo "Preparing Traefik certificate folder..."
+    - rm -rf $CI_PROJECT_DIR/traefik-public-certificates
     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
     #- chown -R $(whoami):$(whoami) $CI_PROJECT_DIR/traefik-public-certificates
     - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
