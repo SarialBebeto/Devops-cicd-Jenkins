@@ -228,7 +228,7 @@ app_security:
   before_script:
     - echo "Preparing Traefik certificate folder..."
     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
-    #- chown -R $(id -u):$(id -g) $CI_PROJECT_DIR/traefik-public-certificates
+    #- chown -R $(whoami):$(whoami) $CI_PROJECT_DIR/traefik-public-certificates
     - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
     - touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
     - chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
@@ -250,7 +250,7 @@ app_security:
             - "80:80"
             - "443:443"
           volumes:
-            - "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
+            - "$CI_PROJECT_DIR/traefik-public-certificates:/letsencrypt"
           labels:
             - "traefik.http.routers.dashboard.entrypoints=websecure"
             - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)"
