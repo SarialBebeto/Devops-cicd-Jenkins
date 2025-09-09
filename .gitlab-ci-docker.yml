@@ -212,7 +212,7 @@ secure_prod:
    url: https://fastapi-traefik.prod-fastapi.ddns-ip.net
   only:
    - main
-  when: manual
+  #when: manual
 
 
 # app_security:
