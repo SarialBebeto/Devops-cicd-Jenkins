@@ -228,7 +228,7 @@ app_security:
   before_script:
     - echo "Preparing Traefik certificate folder..."
     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
-    - chown -R $(id -u):$(id -g) $CI_PROJECT_DIR/traefik-public-certificates
+    #- chown -R $(id -u):$(id -g) $CI_PROJECT_DIR/traefik-public-certificates
     - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
     - touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
     - chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
