@@ -155,7 +155,7 @@ secure_prod:
   script:
     - echo "Installing dependencies"
     - apt install -y docker-compose docker.io
-    - systemctl start docker
+    - #systemctl start docker
     - docker-compose -f docker-compose.prod.yml down
     - sudo apt-get update && sudo apt-get install -y bash curl coreutils ufw certbot
     - sudo certbot certonly --standalone -d fastapi-traefik.prod-fastapi.ddns-ip.net --non-interactive --agree-tos --email tsamosarial@yahoo.fr
