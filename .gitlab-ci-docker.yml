@@ -151,6 +151,7 @@ secure_prod:
     - chmod 700 /home/gitlab-runner/traefik-public-certificates
     - chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
   script:
+    - echo "Installing dependencies"
     - docker-compose -f docker-compose.prod.yml down
     - sudo apt-get update && sudo apt-get install -y bash curl coreutils ufw certbot
     - sudo certbot certonly --standalone -d fastapi-traefik.prod-fastapi.ddns-ip.net --non-interactive --agree-tos --email tsamosarial@yahoo.fr
