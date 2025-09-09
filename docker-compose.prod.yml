@@ -14,7 +14,7 @@ services:
       - "traefik.enable=true"
 
       # Route traffic for FastAPI app based the choose domain
-      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi-traefik.prod-fastapi.ddns-ip.net`)"
       
       # Enable TLS (SSL) on the router
       - "traefik.http.routers.fastapi.tls=true"
@@ -79,8 +79,8 @@ services:
     labels:
       - "traefik.enable=true"
 
-      # Protect Traefik dashboard behind the domain
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ip-ddns.com`)" 
+      # Protect Traefik dashboard behind the domain 
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard-fastapi-traefik.prod-fastapi.ddns-ip.net`)" 
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.service=api@internal"

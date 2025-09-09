@@ -164,12 +164,12 @@ secure_prod:
         web:
           labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.web.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+            - "traefik.http.routers.web.rule=Host(`fastapi-traefik.prod-fastapi.ddns-ip.net`)"
             - "traefik.http.routers.web.entrypoints=websecure"
             - "traefik.http.routers.web.tls.certresolver=letsencrypt"
             - "traefik.http.routers.web.middlewares=secure-headers"
             - "traefik.http.routers.web-secure-redirect.entrypoints=web"
-            - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ip-ddns.com`)"
+            - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ddns-ip.net`)"
             - "traefik.http.routers.web-secure-redirect.middlewares=redirect-to-https"
             - "traefik.http.services.web.loadbalancer.server.port=80"
       EOF
@@ -192,19 +192,20 @@ secure_prod:
     - docker-compose exec -T web curl -f http://web:80/ || (echo "Internal health check failed!" && exit 1)
     - docker-compose exec -it web curl -vk http://web:80/docs || (echo "Internal docs endpoint check failed!" && exit 1)
     - echo "Checking HTTPS..."
-    - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ip-ddns.com | openssl x509 -noout -issuer -subject -dates
-    - curl -vk http://fastapi-traefik.prod-fastapi.ip-ddns.com/.well-known/acme-challenge/test
-    - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
-    - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
-    - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com 2>&1 | grep "issuer"
-    - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com
+    - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ddns-ip.net | openssl x509 -noout -issuer -subject -dates
+    - curl -vk http://fastapi-traefik.prod-fastapi.ddns-ip.net/.well-known/acme-challenge/test
+    - curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net/docs || (echo "HTTPS check failed!" && exit 1)
+    - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net/docs
+    - curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net 2>&1 | grep "issuer"
+    - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net
     - echo "HTTPS enabled and secure headers applied!"
   environment:
    name: Production
-   url: https://fastapi-traefik.prod-fastapi.ip-ddns.com
+   url: https://fastapi-traefik.prod-fastapi.ddns-ip.net
   only:
    - main
   when: manual
+
 
 # app_security:
 #   stage: deploy_prod
