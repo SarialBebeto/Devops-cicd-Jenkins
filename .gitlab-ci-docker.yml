@@ -228,17 +228,17 @@ app_security:
   before_script:
     - echo "Preparing Traefik certificate folder..."
     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/traefik-public-certificates
+    - chown -R $(id -u):$(id -g) $CI_PROJECT_DIR/traefik-public-certificates
     - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
-    - sudo touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
-    - sudo chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
+    - touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
+    - chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
     - ls -l $CI_PROJECT_DIR/traefik-public-certificates
     - cat $CI_PROJECT_DIR/traefik-public-certificates/acme.json
     - echo "Installing dependencies"
     - if ! command -v docker-compose &> /dev/null; then
-         sudo apt-get install docker-compose -y && sudo apt-get update -y;
+         apt-get install docker-compose -y && apt-get update -y;
       fi
-    - sudo apt-get install -y bash curl coreutils
+    - apt-get install -y bash curl coreutils
     - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
