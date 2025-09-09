@@ -143,8 +143,8 @@ deploy_prod:
 secure_prod:
   stage: deploy_prod
   image: sarialbebeto/fastapi-prod:latest
-  #tags: 
-  #  - traefik-fastapi-project       # a shell runner to run this job
+  tags: 
+    - traefik-fastapi-project       # a shell runner to run this job
   before_script:
     - echo "Preparing Traefik certificate folder..."
     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
@@ -213,8 +213,7 @@ secure_prod:
    url: https://fastapi-traefik.prod-fastapi.ddns-ip.net
   only:
    - main
-  #when: manual
-
+  when: manual
 
 # app_security:
 #   stage: deploy_prod
