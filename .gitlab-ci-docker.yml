@@ -204,7 +204,7 @@ secure_prod:
     # - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net/docs
     # - curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net 2>&1 | grep "issuer"
     # - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net
-    # - echo "HTTPS enabled and secure headers applied!"
+    - echo "HTTPS enabled and secure headers applied!"
   environment:
    name: Production
    url: https://fastapi-traefik.prod-fastapi.ddns-ip.net
