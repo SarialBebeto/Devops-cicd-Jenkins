@@ -227,13 +227,13 @@ app_security:
   image: docker:27-cli
   before_script:
     - echo "Preparing Traefik certificate folder..."
-    - mkdir -p /home/gitlab-runner/traefik-public-certificates
-    - sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/traefik-public-certificates
-    - chmod 700 /home/gitlab-runner/traefik-public-certificates
-    - sudo touch /home/gitlab-runner/traefik-public-certificates/acme.json
-    - sudo chmod 600 /home/gitlab-runner/traefik-public-certificates/acme.json
-    - ls -l /home/gitlab-runner/traefik-public-certificates
-    - cat /home/gitlab-runner/traefik-public-certificates/acme.json
+    - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/traefik-public-certificates
+    - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
+    - sudo touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
+    - sudo chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
+    - ls -l $CI_PROJECT_DIR/traefik-public-certificates
+    - cat $CI_PROJECT_DIR/traefik-public-certificates/acme.json
     - echo "Installing dependencies"
     - if ! command -v docker-compose &> /dev/null; then
          sudo apt-get install docker-compose -y && sudo apt-get update -y;
