@@ -68,8 +68,8 @@ services:
       - "--accesslog=true"
 
       # Redirect all HTTP to HTTPS
-      #- "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      #- "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
 
       # TLS certificate resolver
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
