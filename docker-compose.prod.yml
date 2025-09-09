@@ -99,7 +99,6 @@ services:
       - "traefik.http.middlewares.secure-headers.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.secure-headers.headers.stsPreload=true"
       - "traefik.http.middlewares.secure-headers.headers.forceSTSHeader=true"
-      - "traefik.http.middlewares.secure-headers.headers.frameDeny=true"
 volumes:
   postgres_data_prod:
   traefik-public-certificates:
