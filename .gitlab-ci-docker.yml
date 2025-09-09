@@ -239,7 +239,7 @@ app_security:
     - if ! command -v docker-compose &> /dev/null; then
          apt-get install docker-compose -y && apt-get update -y;
       fi
-    - apt-get install -y bash curl coreutils
+    #- apt-get install -y bash curl coreutils
     - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
