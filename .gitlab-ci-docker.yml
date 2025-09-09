@@ -141,6 +141,7 @@ deploy_prod:
 
 secure_prod:
   stage: deploy_prod
+  image: docker:latest
   tags: 
     - traefik-fastapi-project       # a shell runner to run this job
   before_script:

@@ -1,0 +1,4 @@
+[fetch]
+	recurseSubmodules = false
+[http "https://gitlab.com"]
+	sslCAInfo = /home/ubuntu/devops-project/builds/glrt-GTd/0/studies25/devops-project.tmp/CI_SERVER_TLS_CA_FILE
