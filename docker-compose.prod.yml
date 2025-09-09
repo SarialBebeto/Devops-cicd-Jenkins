@@ -55,6 +55,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       #- "./traefik-public-certificates:/certificates"   
       - "./traefik-public-certificates:/letsencrypt" 
+      - "/home/gitlab-runner/traefik-public-certificates:/letsencrypt"
     command:
       # Enable Docker as a provider
       - "--providers.docker=true"
