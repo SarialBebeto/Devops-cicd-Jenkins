@@ -159,7 +159,7 @@ secure_prod:
     #- docker-compose -f docker-compose.prod.yml down
     #- docker-compose version
     #- docker version
-    - apt-get update && sudo apt-get install -y bash curl coreutils ufw certbot
+    - apt-get update && apt-get install -y bash curl coreutils ufw certbot
     - certbot certonly --standalone -d fastapi-traefik.prod-fastapi.ddns-ip.net --non-interactive --agree-tos --email tsamosarial@yahoo.fr
     - test -f /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem || (echo "Certificate file not found!" && exit 1)
     - openssl x509 -in /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem -noout -issuer -subject -dates
