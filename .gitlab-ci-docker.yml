@@ -177,7 +177,9 @@ secure_prod:
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
     - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
     - docker ps -a
-    - sleep 90
+    - sleep 20
+    - docker-compose restart traefik
+    - sleep 20
     - docker-compose ps
     - docker-compose logs traefik
     - docker-compose logs db
@@ -189,6 +191,7 @@ secure_prod:
     - docker-compose exec -it web curl -vk http://web:80/docs || (echo "Internal docs endpoint check failed!" && exit 1)
     - echo "Checking HTTPS..."
     - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ip-ddns.com | openssl x509 -noout -issuer -subject -dates
+    - curl -vk http://fastapi-traefik.prod-fastapi.ip-ddns.com/.well-known/acme-challenge/test
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs || (echo "HTTPS check failed!" && exit 1)
     - curl -vkI https://fastapi-traefik.prod-fastapi.ip-ddns.com/docs
     - curl -vk https://fastapi-traefik.prod-fastapi.ip-ddns.com 2>&1 | grep "issuer"
