@@ -156,14 +156,16 @@ secure_prod:
     - echo "Installing dependencies"
     - apt install -y docker.io
     #- systemctl start docker
-    - docker-compose -f docker-compose.prod.yml down
-    - sudo apt-get update && sudo apt-get install -y bash curl coreutils ufw certbot
-    - sudo certbot certonly --standalone -d fastapi-traefik.prod-fastapi.ddns-ip.net --non-interactive --agree-tos --email tsamosarial@yahoo.fr
-    - sudo test -f /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem || (echo "Certificate file not found!" && exit 1)
-    - sudo openssl x509 -in /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem -noout -issuer -subject -dates
-    - sudo cp /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem /home/gitlab-runner/traefik-public-certificates/
-    - sudo cp /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/privkey.pem /home/gitlab-runner/traefik-public-certificates/
-    - sudo chmod 600 /home/gitlab-runner/traefik-public-certificates/*.pem
+    #- docker-compose -f docker-compose.prod.yml down
+    - docker-compose version
+    - docker version
+    - apt-get update && sudo apt-get install -y bash curl coreutils ufw certbot
+    - certbot certonly --standalone -d fastapi-traefik.prod-fastapi.ddns-ip.net --non-interactive --agree-tos --email tsamosarial@yahoo.fr
+    - test -f /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem || (echo "Certificate file not found!" && exit 1)
+    - openssl x509 -in /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem -noout -issuer -subject -dates
+    - cp /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem /home/gitlab-runner/traefik-public-certificates/
+    - cp /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/privkey.pem /home/gitlab-runner/traefik-public-certificates/
+    - chmod 600 /home/gitlab-runner/traefik-public-certificates/*.pem
     - docker-compose -f docker-compose.prod.yml up -d --build
     - docker ps -a
     - sleep 20
