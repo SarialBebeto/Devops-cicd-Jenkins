@@ -23,9 +23,7 @@ update:
   artifacts:
     paths:
       - .venv/
-    expire_in: 1 hour
-  # when: manual
-  
+    expire_in: 1 hour  
 
 build:
   stage: build
@@ -42,7 +40,6 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
-  when: manual
 
 unit-test:
   stage: test
@@ -70,7 +67,6 @@ unit-test:
       junit: report.xml
   only:
     - main   
-  when: manual
 
 smoke-test:
   stage: test
@@ -114,8 +110,7 @@ deploy_dev:
     url: http://dev.example.com
   only:
     - main
-    - develop
-  when: manual
+    - dev
 
 deploy_prod:
   stage: deploy_prod
@@ -140,86 +135,6 @@ deploy_prod:
     - main
   when: manual
 
-# secure_prod:
-#   stage: deploy_prod
-#   image: sarialbebeto/fastapi-prod:latest
-#   # tags: 
-#   #   - traefik-fastapi-project       # a shell runner to run this job
-#   before_script:
-#     - echo "Preparing Traefik certificate folder..."
-#     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
-#     - chown -R $(id -u):$(id -g) $CI_PROJECT_DIR/traefik-public-certificates
-#     - touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
-#     - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
-#     - chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
-#   script:
-#     - echo "Installing dependencies"
-#     - apt install -y docker.io
-#     #- systemctl start docker
-#     #- docker-compose -f docker-compose.prod.yml down
-#     #- docker-compose version
-#     #- docker version
-#     - apt-get update && apt-get install -y bash curl coreutils ufw certbot
-#     - certbot certonly --standalone -d fastapi-traefik.prod-fastapi.ddns-ip.net --non-interactive --agree-tos --email tsamosarial@yahoo.fr
-#     - test -f /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem || (echo "Certificate file not found!" && exit 1)
-#     - openssl x509 -in /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem -noout -issuer -subject -dates
-#     - cp /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/fullchain.pem /home/gitlab-runner/traefik-public-certificates/
-#     - cp /etc/letsencrypt/live/fastapi-traefik.prod-fastapi.ddns-ip.net/privkey.pem /home/gitlab-runner/traefik-public-certificates/
-#     - chmod 600 /home/gitlab-runner/traefik-public-certificates/*.pem
-#     - docker-compose -f docker-compose.prod.yml up -d --build
-#     - docker ps -a
-#     - sleep 20
-#     - curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net --max-time 30 || (echo "HTTPS check failed!" && exit 1)
-#     # - echo "Securing Production with HTTPS..."
-#     # - |
-    #   cat > docker-compose.override.yml <<'EOF'
-    #   services:
-    #     web:
-    #       labels:
-    #         - "traefik.enable=true"
-    #         - "traefik.http.routers.web.rule=Host(`fastapi-traefik.prod-fastapi.ddns-ip.net`)"
-    #         - "traefik.http.routers.web.entrypoints=websecure"
-    #         - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-    #         - "traefik.http.routers.web.middlewares=secure-headers"
-    #         - "traefik.http.routers.web-secure-redirect.entrypoints=web"
-    #         - "traefik.http.routers.web-secure-redirect.rule=Host(`fastapi-traefik.prod-fastapi.ddns-ip.net`)"
-    #         - "traefik.http.routers.web-secure-redirect.middlewares=redirect-to-https"
-    #         - "traefik.http.services.web.loadbalancer.server.port=80"
-    #   EOF
-    # - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up -d --build 
-    # # - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs traefik
-    # - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml logs web
-    # - docker ps -a
-    # - sleep 20
-    # - docker-compose restart traefik
-    # - docker-compose restart web
-    # - docker-compose restart db
-    # - sleep 20
-    # - docker-compose ps
-    # - docker-compose logs traefik
-    # - docker-compose logs db
-    # - docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml config > /tmp/merged.yml
-    # - cat /tmp/merged.yml
-    # - docker-compose logs traefik | grep acme
-    # - echo "Test FastAPI inside the container..."
-    # - docker-compose exec -T web curl -f http://web:80/ || (echo "Internal health check failed!" && exit 1)
-    # - docker-compose exec -it web curl -vk http://web:80/docs || (echo "Internal docs endpoint check failed!" && exit 1)
-    # - echo "Checking HTTPS..."
-    # - openssl s_client -connect fastapi-traefik.prod-fastapi.ip-ddns.com:443 -servername fastapi-traefik.prod-fastapi.ddns-ip.net | openssl x509 -noout -issuer -subject -dates
-    # - curl -vk http://fastapi-traefik.prod-fastapi.ddns-ip.net/.well-known/acme-challenge/test
-    # - curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net/docs || (echo "HTTPS check failed!" && exit 1)
-    # - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net/docs
-    # - curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net 2>&1 | grep "issuer"
-    # - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net
-    #- echo "HTTPS enabled and secure headers applied!" #
-  # environment:
-  #  name: Production
-  #  url: https://fastapi-traefik.prod-fastapi.ddns-ip.net
-  # only:
-  #  - main
-  # when: manual
-
-
 app_security:
   stage: deploy_prod
   tags: 
@@ -229,7 +144,6 @@ app_security:
     - echo "Preparing Traefik certificate folder..."
     - rm -rf $CI_PROJECT_DIR/traefik-public-certificates
     - mkdir -p $CI_PROJECT_DIR/traefik-public-certificates
-    #- chown -R $(whoami):$(whoami) $CI_PROJECT_DIR/traefik-public-certificates
     - chmod 700 $CI_PROJECT_DIR/traefik-public-certificates
     - touch $CI_PROJECT_DIR/traefik-public-certificates/acme.json
     - chmod 600 $CI_PROJECT_DIR/traefik-public-certificates/acme.json
@@ -239,7 +153,6 @@ app_security:
     - if ! command -v docker-compose &> /dev/null; then
          apt-get install docker-compose -y && apt-get update -y;
       fi
-    #- apt-get install -y bash curl coreutils
     - docker-compose -f docker-compose.prod.yml down
   script:
     - echo "Deploying to Production (host Docker)"
@@ -285,10 +198,11 @@ app_security:
     - DOMAIN=fastapi-traefik.prod-fastapi.ip-ddns.com
     - curl -vk "http://$DOMAIN:80" || (echo "public HTTP failed" && exit 1) || true
     - curl -vk http://$DOMAIN/.well-known/acme-challenge/TEST
-    - curl -k "https://$DOMAIN:443" || (echo "public HTTPS failed" && exit 1)
+    - curl -vk "https://$DOMAIN:443" || (echo "public HTTPS failed" && exit 1)
     - echo "Check SSL certificate info"
     - openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" </dev/null 2>/dev/null | openssl x509 -noout -issuer -subject -dates
     - curl -vI "http://dashboard-$DOMAIN/.well-known/acme-challenge/TEST"
+    - curl -vkI https://fastapi-traefik.prod-fastapi.ddns-ip.net
     - echo "Deployment and HTTPS verified successfully!"
   environment:
     name: Production

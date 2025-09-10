@@ -15,8 +15,7 @@ variables:
 deploy_prod:
   stage: deploy
   tags:
-    #- runner_fastapi_project
-    - runner_fastapi_project_second
+    - traefik-fastapi-project # a shell runner to run this job
   before_script:
     - whoami
     - export PATH=$BIN_DIR:$PATH
@@ -89,6 +88,7 @@ deploy_prod:
     - helm list -n $NAMESPACE  
     - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
+    - sudo kubectl get svc traefik -n kube-system
     - |
       for i in {1..10}; do
         export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
@@ -98,6 +98,7 @@ deploy_prod:
     - 'echo "Service IP: $SERVICE_IP"'
     - if [ -n "$SERVICE_IP" ]; then
         curl -f http://$SERVICE_IP:80 || (echo "Health check failed!" && exit 1);
+        curl -vk https://fastapi-traefik.prod-fastapi.ddns-ip.net || (echo "HTTPS Health check failed!" && exit 1);
       else
         echo "Service IP not found!" && exit 1;
       fi
@@ -106,3 +107,6 @@ deploy_prod:
     name: production
     url: https://api.example.com
   allow_failure: true
+  only:
+    - main
+  when: manual
