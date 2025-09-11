@@ -102,7 +102,7 @@ k8s_pipeline_prod:
     include: 
       - local: .gitlab-ci-k8s-prod.yml
     strategy: depend
-  when: manual
+ # when: manual
 
 deploy_dev_aws:
   stage: deploy_aws
