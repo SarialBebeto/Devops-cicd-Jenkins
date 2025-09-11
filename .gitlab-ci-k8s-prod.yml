@@ -22,12 +22,10 @@ deploy_prod:
     - set -eou pipefail
     - export KUBECONFIG=$KUBECONFIG_FILE
     - if [ -d "$KUBECONFIG_FILE" ]; then sudo rm -rf "$KUBECONFIG_FILE"; fi
-    - touch $KUBECONFIG_FILE
-    #- sudo cat $KUBECONFIG
+    - mkdir -p $(dirname $KUBECONFIG_FILE)
+    - echo "$KUBECONFIG_CONTENT" | base64 -d > "$KUBECONFIG_FILE"
     - sudo chmod 600 $KUBECONFIG_FILE
-    #- sudo cp -r $KUBECONFIG $KUBECONFIG_FILE
     - echo "$KUBECONFIG_CONTENT" > "$KUBECONFIG_FILE"
-    #- sudo chown gitlab-runner:gitlab-runner $KUBECONFIG_FILE
     - sudo chown $(whoami):$(whoami) $KUBECONFIG_FILE
     - sudo ls -l $KUBECONFIG_FILE
 
@@ -41,7 +39,7 @@ deploy_prod:
     - mkdir -p $BIN_DIR
     - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - mv kubectl $BIN_DIR/kubectl
-    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o $BIN_DIR/kubectl
+    #- curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o $BIN_DIR/kubectl
     - chmod +x $BIN_DIR/kubectl
     
     # Install helm into the workspace
