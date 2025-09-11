@@ -111,4 +111,3 @@ deploy_prod:
   allow_failure: true
   only:
     - main
-  when: manual
