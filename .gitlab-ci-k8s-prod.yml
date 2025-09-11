@@ -26,7 +26,7 @@ deploy_prod:
     #- sudo cat $KUBECONFIG
     - sudo chmod 600 $KUBECONFIG_FILE
     #- sudo cp -r $KUBECONFIG $KUBECONFIG_FILE
-    - echo "$KUBECONFIG" > $KUBECONFIG_FILE
+    - echo "$KUBECONFIG_CONTENT" > $KUBECONFIG_FILE
     #- sudo chown gitlab-runner:gitlab-runner $KUBECONFIG_FILE
     - sudo chown $(whoami):$(whoami) $KUBECONFIG_FILE
     - sudo ls -l $KUBECONFIG_FILE
