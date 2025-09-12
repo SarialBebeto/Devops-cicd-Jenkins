@@ -25,7 +25,6 @@ deploy_prod:
     - mkdir -p $(dirname $KUBECONFIG_FILE)
     - echo "$KUBECONFIG_CONTENT" | base64 -d > "$KUBECONFIG_FILE"
     - sudo chmod 600 $KUBECONFIG_FILE
-    - echo "$KUBECONFIG_CONTENT" > "$KUBECONFIG_FILE"
     - sudo chown $(whoami):$(whoami) $KUBECONFIG_FILE
     - sudo ls -l $KUBECONFIG_FILE
 
