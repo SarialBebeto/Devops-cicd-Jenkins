@@ -21,9 +21,10 @@ podSecurityContext: {}
 
 securityContext: {}
 
-web:
- containerport: 8000
+# web:
+#  containerPort: 8000
 
+containerPort: 8000
 service:
   type: ClusterIP
   port: 80
