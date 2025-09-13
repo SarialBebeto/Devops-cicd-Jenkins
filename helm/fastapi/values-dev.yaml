@@ -48,14 +48,31 @@ web:
  env:
   - name: ENV
     value: dev
-resources: {}
 
+web:
+  containerPort: 8000
+  readinessProbe:
+    httpGet:
+      path: /docs
+      port: 8000
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8000
+
+resources: {}
 
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
+
+db:
+  port: 5432
+  user: fastapi_traefik
+  password: fastapi_traefik
+  database: fastapi_traefik
 
 volumes: []
 

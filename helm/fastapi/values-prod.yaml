@@ -49,6 +49,23 @@ web:
     - name: ENV
       value: "production"
 
+web:
+  containerPort: 80
+  readinessProbe:
+    httpGet:
+      path: /docs
+      port: 80
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 80
+
+db:
+  port: 5432
+  user: fastapi_traefik_prod
+  password: fastapi_traefik_prod
+  name: fastapi_traefik_prod
+
 resources:
   limits:
     cpu: 500m

@@ -35,10 +35,10 @@ spec:
           readinessProbe:
             httpGet:
               path: /docs
-              port: {{ .Values.web.containerPort }}
+              port: {{ .Values.web.readinessProbe.httpGet.port }}
             initialDelaySeconds: 5
           livenessProbe:
             httpGet:
               path: /
-              port: {{ .Values.web.containerPort }}
+              port: {{ .Values.web.livenessProbe.httpGet.port }}
             initialDelaySeconds: 10
