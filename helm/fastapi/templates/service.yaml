@@ -11,6 +11,5 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
-      # containerPort: {{ .values.containerPort}}
   selector:
     {{- include "fastapi.selectorLabels" . | nindent 4 }}
