@@ -6,7 +6,7 @@ image:
   tag: "latest"
 imagePullSecrets: []
 
-.
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -21,6 +21,12 @@ podAnnotations: {}
 podSecurityContext: {}
 
 securityContext: {}
+
+containerPort: 8000
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
 
 ingress:
   enabled: true

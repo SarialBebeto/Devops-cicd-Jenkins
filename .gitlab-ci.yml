@@ -3,7 +3,7 @@ stages:
  - build
  - test
  - deploy_using_docker
- - deploy
+ - deploy_kubernetes
  - deploy_aws
 
 update:
@@ -86,7 +86,7 @@ docker_pipeline:
   when: manual
 
 k8s_pipeline_dev:
-  stage: deploy
+  stage: deploy_kubernetes
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   trigger:
@@ -95,7 +95,7 @@ k8s_pipeline_dev:
     strategy: depend
 
 k8s_pipeline_prod:
-  stage: deploy
+  stage: deploy_kubernetes
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   trigger:
