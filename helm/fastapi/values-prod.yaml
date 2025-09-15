@@ -63,7 +63,7 @@ ingress:
 db:
   image:
     repository: postgres
-    tag: "15-alpine"
+    tag: "17-alpine"
     pullPolicy: IfNotPresent
   port: 5432
   user: fastapi_traefik_prod
