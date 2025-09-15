@@ -72,14 +72,16 @@ db:
   storage:
     size: 5Gi
     storageClassName: ""
+  environment:
+    - DATABASE_URL=postgresql://fastapi_traefik_prod:fastapi_traefik_prod@fastapi-prod-db:5432/fastapi_traefik_prod
 
 resources:
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 1024Mi
   requests:
     cpu: 200m
-    memory: 256Mi
+    memory: 512Mi
 
 livenessProbe:
   httpGet:
