@@ -106,7 +106,8 @@ deploy_prod:
     - sudo kubectl describe pods -n $NAMESPACE
     - sudo kubectl get svc -n $NAMESPACE
     - sudo kubectl get statefulset -n $NAMESPACE
-    - sudo kubectl describe statefulset $RELEASE_NAME-db -n $NAMESPACE
+    - sudo kubectl logs pods -n $NAMESPACE
+    #- sudo kubectl describe statefulset $RELEASE_NAME-db -n $NAMESPACE
     - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - sudo kubectl get svc traefik -n kube-system
