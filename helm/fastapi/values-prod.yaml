@@ -44,27 +44,34 @@ ingress:
       hosts:
         - fastapi-traefik.prod-fastapi.ddns-ip.net
 
-web:
-  env:
-    - name: ENV
-      value: "production"
+# web:
+#   env:
+#     - name: ENV
+#       value: "production"
 
-web:
-  containerPort: 80
-  readinessProbe:
-    httpGet:
-      path: /docs
-      port: 80
-  livenessProbe:
-    httpGet:
-      path: /
-      port: 80
+# web:
+#   containerPort: 80
+#   readinessProbe:
+#     httpGet:
+#       path: /docs
+#       port: 80
+#   livenessProbe:
+#     httpGet:
+#       path: /
+#       port: 80
 
 db:
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
   port: 5432
   user: fastapi_traefik_prod
   password: fastapi_traefik_prod
   name: fastapi_traefik_prod
+  storage:
+    size: 5Gi
+    storageClassName: ""
 
 resources:
   limits:

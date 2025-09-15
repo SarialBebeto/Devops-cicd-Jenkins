@@ -12,3 +12,5 @@ spec:
     app.kubernetes.io/name: {{ include "fastapi.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     role: db
+
+  
