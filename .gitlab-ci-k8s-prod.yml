@@ -87,7 +87,7 @@ deploy_prod:
           --set image.tag=$IMAGE_TAG \
           --set-string db.password="$DB_PASSWORD" \
           --timeout 10m0s --atomic \
-          --debug
+          --debug;
       else
         echo "Release $RELEASE_NAME does not exist in namespace $NAMESPACE, installing..."
         sudo -E helm install $RELEASE_NAME $CHART_DIR \
@@ -99,7 +99,7 @@ deploy_prod:
           --set image.tag=$IMAGE_TAG \
           --set-string db.password="$DB_PASSWORD" \
           --timeout 10m0s --atomic \
-          --debug
+          --debug;
       fi
     - sleep 20  
     - helm list -n $NAMESPACE 
