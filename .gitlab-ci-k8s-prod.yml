@@ -86,7 +86,8 @@ deploy_prod:
           -f $CHART_DIR/values-prod.yaml \
           --set image.tag=$IMAGE_TAG \
           --set-string db.password="$DB_PASSWORD" \
-          --timeout 10m0s --atomic;
+          --timeout 10m0s --atomic \
+          --debug
       else
         echo "Release $RELEASE_NAME does not exist in namespace $NAMESPACE, installing..."
         sudo -E helm install $RELEASE_NAME $CHART_DIR \
@@ -97,11 +98,13 @@ deploy_prod:
           -f $CHART_DIR/values-prod.yaml \
           --set image.tag=$IMAGE_TAG \
           --set-string db.password="$DB_PASSWORD" \
-          --timeout 10m0s --atomic;
+          --timeout 10m0s --atomic \
+          --debug
       fi
-    #--dry-run --debug | grep -A3 "kind: Service"
     - sleep 20  
-    - helm list -n $NAMESPACE  
+    - helm list -n $NAMESPACE 
+    - sudo kubectl get nodes --kubeconfig $KUBECONFIG
+    - sudo kubectl get ns 
     - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
     - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
     - sudo kubectl get svc traefik -n kube-system
