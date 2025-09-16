@@ -8,15 +8,17 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: alembic
-          image: sarialbebeto/alembic-migrate:latest
-          command: ["alembic", "upgrade", "head"]
-          env:
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: fastapi-prod-db
-                  key: POSTGRES_PASSWORD
-            - name: DATABASE_URL
-              value: "postgresql://fastapi_traefik_prod:$(DB_PASSWORD)@fastapi-prod-db:5432/fastapi_traefik_prod"
+          - name: alembic
+            image: sarialbebeto/alembic-migrate:latest
+            command: ["sh", "-c"]
+            args:
+              - |
+                export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD_PROD}@fastapi-prod-db:5432/fastapi_traefik_prod" && \
+                alembic upgrade head
+            env:
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: fastapi-prod-db
+                    key: POSTGRES_PASSWORD
 
