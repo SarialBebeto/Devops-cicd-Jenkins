@@ -1,4 +1,5 @@
 stages:
+  - migrate
   - deploy
 
 variables:
@@ -11,10 +12,29 @@ variables:
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   DB_PASSWORD: "traefikapi2025@"
 
+migrate_db:
+  image: python:3.11
+  stage: migrate
+  before_script:
+    - apt-get update && apt-get install -y libpq-dev gcc
+    - pip install --upgrade pip
+    - pip install -r requirements.txt alembic
+  script:
+    - alembic upgrade head
+  variables:
+    DATABASE_URL: "postgresql://fastapi_traefik_prod:fastapi_traefik_prod@db:5432/fastapi_traefik_prod"
+  only:
+    - main
+  tags:
+    - traefik-fastapi-project
+  allow_failure: false
+  when: on_success
+
 deploy_prod:
   stage: deploy
   tags:
     - traefik-fastapi-project
+  needs: ["migrate_db"]
   before_script:
     - whoami
     - export PATH=$BIN_DIR:$PATH
