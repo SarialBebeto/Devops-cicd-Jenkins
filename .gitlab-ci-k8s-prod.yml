@@ -13,12 +13,11 @@ variables:
   DB_PASSWORD: "traefikapi2025@"
 
 migrate_db:
-  image: python:3.11
+  image: python:3.11-slim
   stage: migrate
   before_script:
-    - apt-get update && apt-get install -y libpq-dev gcc
     - pip install --upgrade pip
-    - pip install -r requirements.txt alembic
+    - pip install -r requirements.txt
   script:
     - alembic upgrade head
   variables:
