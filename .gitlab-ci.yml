@@ -2,9 +2,10 @@ stages:
  - update
  - build
  - test
- - deploy_with_docker
- - deploy_with_kubernetes
- - deploy_with_aws
+ - deploy
+#  - deploy_with_docker
+#  - deploy_with_kubernetes
+#  - deploy_with_aws
 
 update:
   stage: update
@@ -79,14 +80,14 @@ update:
 #     - main
 
 docker_pipeline:
-  stage: deploy_with_docker
+  stage: deploy
   trigger:
     include: .gitlab-ci-docker.yml
     strategy: depend
   when: manual
 
-k8s_pipeline_dev:
-  stage: deploy_with_kubernetes
+kubernetes_pipeline_dev:
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   trigger:
@@ -94,8 +95,8 @@ k8s_pipeline_dev:
      - local: .gitlab-ci-k8s-dev.yml
     strategy: depend
 
-k8s_pipeline_prod:
-  stage: deploy_with_kubernetes
+kubernetes_pipeline_prod:
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   trigger:
@@ -104,8 +105,8 @@ k8s_pipeline_prod:
     strategy: depend
   when: manual
 
-deploy_dev_aws:
-  stage: deploy_with_aws
+aws_deploy_dev:
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   trigger:
@@ -113,8 +114,8 @@ deploy_dev_aws:
       - local: .gitlab-ci-aws-dev.yml
     strategy: depend
 
-deploy_prod_aws:
-  stage: deploy_with_aws
+aws_deploy_prod:
+  stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   trigger:
