@@ -25,16 +25,16 @@ class User(ormar.Model):
 
 # Only run table creation after a successful DB connection
 engine = sqlalchemy.create_engine(settings.db_url)
-for i in range(10):
+for i in range(20):
     try:
         connection = engine.connect()
         connection.close()
         break
     except Exception as e:
-        print(f"DB not ready, retrying in 3s: {e}")
-        time.sleep(3)
+        print(f"DB not ready, retrying in 5s: {e}")
+        time.sleep(5)
 else:
-    raise RuntimeError("DB not reachable after 10 attempts")
+    raise RuntimeError("DB not reachable after 20 attempts")
 
 metadata.create_all(engine)
 
