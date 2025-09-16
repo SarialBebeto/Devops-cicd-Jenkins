@@ -21,11 +21,11 @@ podLabels: {}
 podSecurityContext: {}
 securityContext: {}
 
-containerPort: 8000
+containerPort: 80
 service:
   type: ClusterIP
-  port: 8000
-  targetPort: 8000
+  port: 80
+  targetPort: 80
 
 ingress:
   enabled: true
@@ -44,22 +44,6 @@ ingress:
       hosts:
         - fastapi-traefik.prod-fastapi.ddns-ip.net
 
-# web:
-#   env:
-#     - name: ENV
-#       value: "production"
-
-# web:
-#   containerPort: 80
-#   readinessProbe:
-#     httpGet:
-#       path: /docs
-#       port: 80
-#   livenessProbe:
-#     httpGet:
-#       path: /
-#       port: 80
-
 db:
   image:
     repository: postgres
@@ -68,7 +52,7 @@ db:
   port: 5432
   user: fastapi_traefik_prod
   password: fastapi_traefik_prod
-  name: fastapi_traefik_prod
+  database: fastapi_traefik_prod
   storage:
     size: 5Gi
     storageClassName: ""
@@ -86,12 +70,12 @@ resources:
 livenessProbe:
   httpGet:
     path: /
-    port: 8000
+    port: 80
 
 readinessProbe:
   httpGet:
     path: /
-    port: 8000
+    port: 80
 
 autoscaling:
   enabled: false
