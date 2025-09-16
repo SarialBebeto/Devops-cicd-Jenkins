@@ -11,11 +11,10 @@ variables:
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   DB_PASSWORD: "traefikapi2025@"
 
-
 deploy_prod:
   stage: deploy
   tags:
-    - traefik-fastapi-project # a shell runner to run this job
+    - traefik-fastapi-project
   before_script:
     - whoami
     - export PATH=$BIN_DIR:$PATH
@@ -23,64 +22,55 @@ deploy_prod:
     - export KUBECONFIG=$KUBECONFIG_FILE
     - if [ -d "$KUBECONFIG_FILE" ]; then sudo rm -rf "$KUBECONFIG_FILE"; fi
     - mkdir -p $(dirname $KUBECONFIG_FILE)
-    - echo "YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGNlcnRpZmljYXRlLWF1dGhvcml0eS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VKbFJFTkRRVkl5WjBGM1NVSkJaMGxDUVVSQlMwSm5aM0ZvYTJwUFVGRlJSRUZxUVdwTlUwVjNTSGRaUkZaUlVVUkVRbWh5VFROTmRHTXlWbmtLWkcxV2VVeFhUbWhSUkVVelRsUlJNazVVVlRGT2VtdDNTR2hqVGsxcVZYZFBSRUUwVFZSSmVFOVVUVFZYYUdOT1RYcFZkMDlFUVRKTlZFbDRUMVJOTlFwWGFrRnFUVk5GZDBoM1dVUldVVkZFUkVKb2NrMHpUWFJqTWxaNVpHMVdlVXhYVG1oUlJFVXpUbFJSTWs1VVZURk9lbXQzVjFSQlZFSm5ZM0ZvYTJwUENsQlJTVUpDWjJkeGFHdHFUMUJSVFVKQ2QwNURRVUZSVjJkQlRtMVlkVkJ3U0VGTlNWSlBMMlV3YlRRelZHZ3piMUZ6WmxoaFIzaDFLM2szYm1FNWQwa0taREV4YkZOQkswNWFSa000U1c1UVEzcHVRUzlzTVdOT1RIUklibTVvVWxkcmEwTlBZVTk1WWl0Q05UTnZNRWwzVVVSQlQwSm5UbFpJVVRoQ1FXWTRSUXBDUVUxRFFYRlJkMFIzV1VSV1VqQlVRVkZJTDBKQlZYZEJkMFZDTDNwQlpFSm5UbFpJVVRSRlJtZFJWVkZqVjJveFlYbElNakJpVlRoRFYyVnBNVUpMQ214alptNDVaMWwzUTJkWlNVdHZXa2w2YWpCRlFYZEpSRk5SUVhkU1owbG9RVXBFWVhSMVpHWTBVVE01T1haNFpsSTVPU3RCYWxScFIzZHlaRXRSTkZNS1F6bERkVUZOU25RMlIzcHNRV2xGUVRKelRYZFVSVWR4UlZFNU4wbzJZakE1WjBWMmVrbFlPSGRCWWpCd1QyWnpNVmM0YjBSemMxQjRSVms5Q2kwdExTMHRSVTVFSUVORlVsUkpSa2xEUVZSRkxTMHRMUzBLCiAgICBzZXJ2ZXI6IGh0dHBzOi8vMTI3LjAuMC4xOjY0NDMKICBuYW1lOiBkZWZhdWx0CmNvbnRleHRzOgotIGNvbnRleHQ6CiAgICBjbHVzdGVyOiBkZWZhdWx0CiAgICB1c2VyOiBkZWZhdWx0CiAgbmFtZTogZGVmYXVsdApjdXJyZW50LWNvbnRleHQ6IGRlZmF1bHQKa2luZDogQ29uZmlnCnByZWZlcmVuY2VzOiB7fQp1c2VyczoKLSBuYW1lOiBkZWZhdWx0CiAgdXNlcjoKICAgIGNsaWVudC1jZXJ0aWZpY2F0ZS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VKcmFrTkRRVlJsWjBGM1NVSkJaMGxKUzJacFIzZFhaU3RvUzNOM1EyZFpTVXR2V2tsNmFqQkZRWGRKZDBsNlJXaE5RamhIUVRGVlJVRjNkMWtLWVhwT2VreFhUbk5oVjFaMVpFTXhhbGxWUVhoT2VsVXdUbXBWTVU1VVl6Vk5RalJZUkZSSk1VMUVaM2RQUkVWNVRWUnJlazlXYjFoRVZFa3lUVVJuZHdwUFJFVjVUVlJyZWs5V2IzZE5SRVZZVFVKVlIwRXhWVVZEYUUxUFl6TnNlbVJIVm5SUGJURm9Zek5TYkdOdVRYaEdWRUZVUW1kT1ZrSkJUVlJFU0U0MUNtTXpVbXhpVkhCb1drY3hjR0pxUWxwTlFrMUhRbmx4UjFOTk5EbEJaMFZIUTBOeFIxTk5ORGxCZDBWSVFUQkpRVUpDWlZNeVFrY3JTbXRoUkV4Mk9VWUtORVJySzJvME1pdFlOa2xDT0VJMlpFeGFTbkJsV0ZaNlNYVm5XRFV5WTJOTVVYSm9WVGRNTDFWdFJGVk5PWFowS3pVelMzWnFSRzAzU2tGR1oyWk5Td3A2VkhjNVptbERhbE5FUWtkTlFUUkhRVEZWWkVSM1JVSXZkMUZGUVhkSlJtOUVRVlJDWjA1V1NGTlZSVVJFUVV0Q1oyZHlRbWRGUmtKUlkwUkJha0ZtQ2tKblRsWklVMDFGUjBSQlYyZENVbHBXUlVoVVJEWnVNazAyZUdwWFJHd3laM2hMVm5ONVpTdE5ha0ZMUW1kbmNXaHJhazlRVVZGRVFXZE9Ta0ZFUWtjS1FXbEZRWGhRYzNGbmR6Vk9aVGhtU3pObFlXWkRZVWRSTXpObksxbHlTbHBhTWk4NFZXZE5TV0pwZW1WTFZrbERTVkZFVTNGcE4weFJRbEpDUjBJdlVBcEhRMW9yTDNsWFJIbHpaRXRYYlVKTGQzUnpjR3c1TXpCTVVGUmhWR2M5UFFvdExTMHRMVVZPUkNCRFJWSlVTVVpKUTBGVVJTMHRMUzB0Q2kwdExTMHRRa1ZIU1U0Z1EwVlNWRWxHU1VOQlZFVXRMUzB0TFFwTlNVbENaR3BEUTBGU01tZEJkMGxDUVdkSlFrRkVRVXRDWjJkeGFHdHFUMUJSVVVSQmFrRnFUVk5GZDBoM1dVUldVVkZFUkVKb2NrMHpUWFJaTW5od0NscFhOVEJNVjA1b1VVUkZNMDVVVVRKT1ZGVXhUbnByZDBob1kwNU5hbFYzVDBSQk5FMVVTWGhQVkUwMVYyaGpUazE2VlhkUFJFRXlUVlJKZUU5VVRUVUtWMnBCYWsxVFJYZElkMWxFVmxGUlJFUkNhSEpOTTAxMFdUSjRjRnBYTlRCTVYwNW9VVVJGTTA1VVVUSk9WRlV4VG5wcmQxZFVRVlJDWjJOeGFHdHFUd3BRVVVsQ1FtZG5jV2hyYWs5UVVVMUNRbmRPUTBGQlUwbDVOekZtTW5Wb1J6aDBiVXAzYkZkQ2RrcG5kMGgzUVdaQ1oxZGpOemhTUWtkVGJGWldkV3hIQ201MWVIVjFkelJtWldaYWFXeHJia0U1VDNSeGVVcHBhMEZIWlVSeEwwczBaVzVZWmtkek1tbzNWWE5vYnpCSmQxRkVRVTlDWjA1V1NGRTRRa0ZtT0VVS1FrRk5RMEZ4VVhkRWQxbEVWbEl3VkVGUlNDOUNRVlYzUVhkRlFpOTZRV1JDWjA1V1NGRTBSVVpuVVZWWFZsSkNNSGNyY0RscVQzTlpNV2MxWkc5TlV3cHNZazF1ZG1wSmQwTm5XVWxMYjFwSmVtb3dSVUYzU1VSU2QwRjNVa0ZKWjJGa1kwcGtjbUZ1WXpCTWJYUjNiM2MyWlcxR1dFRTFOVzl0UmxwWU0yNXVDbFUxVTFNNGJtRkJLemhqUTBsSVRqSjFORWczZFd4TGRGWnZUV1ZDU1haUE4waHdRMW93U21WSmJsVlBNMjloYVZoNmJYVkhXRVZEQ2kwdExTMHRSVTVFSUVORlVsUkpSa2xEUVZSRkxTMHRMUzBLCiAgICBjbGllbnQta2V5LWRhdGE6IExTMHRMUzFDUlVkSlRpQkZReUJRVWtsV1FWUkZJRXRGV1MwdExTMHRDazFJWTBOQlVVVkZTVXQ2VldobmFtaE5SbWhvT1RSa2EzWkJVa1JLYjBSYVdrbG9SMlZ5YzJGQlUxcGtRVEppZERWTFdubHZRVzlIUTBOeFIxTk5ORGtLUVhkRlNHOVZVVVJSWjBGRlJqVk1XVVZpTkcxU2IwMTFMekJZWjA5VU5sQnFZalZtYjJkSWQwaHdNSFJyYld3MVpGaE5hVFpDWm01YWVIZDBRM1ZHVkFwemRqbFRXVTVSZWpJck16ZHVZM0VyVFU5aWMydEJWMEk0ZDNKT1VFUXhLMGxCUFQwS0xTMHRMUzFGVGtRZ1JVTWdVRkpKVmtGVVJTQkxSVmt0TFMwdExRbz0K" | base64 -d > "$KUBECONFIG_FILE"
+    - echo "$KUBE_CONFIG_CONTENT" | base64 -d > "$KUBECONFIG_FILE"
     - sudo chmod 600 $KUBECONFIG_FILE
     - sudo chown $(whoami):$(whoami) $KUBECONFIG_FILE
     - sudo ls -l $KUBECONFIG_FILE
-
-    # Install dependencies
     - echo "Installing dependencies..."
     - sudo apt-get update -y
     - sudo apt-get install -y curl bash openssl tar
-
-    # Install kubectl into the workspace
     - echo "Installing kubectl..."
     - mkdir -p $BIN_DIR
     - curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - mv kubectl $BIN_DIR/kubectl
-    #- curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o $BIN_DIR/kubectl
     - chmod +x $BIN_DIR/kubectl
-    
-    # Install helm into the workspace
     - echo "Installing helm..."
     - curl -sL https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz -o /tmp/helm.tgz
     - tar -zxvf /tmp/helm.tgz -C /tmp
     - mv /tmp/linux-amd64/helm $BIN_DIR/helm
     - chmod +x $BIN_DIR/helm
-    - helm version
-    
-    # Sanity Checks: print which runner & kube server we're using
+    - $BIN_DIR/helm version
     - echo "Runner=$CI_RUNNER_DESCRIPTION"
     - echo "Using KUBECONFIG=$KUBECONFIG"
-    - sudo kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
-    - sudo kubectl version
-    - sudo kubectl get nodes
+    - $BIN_DIR/kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
+    - $BIN_DIR/kubectl version
+    - $BIN_DIR/kubectl get nodes
     - echo "Password=$DB_PASSWORD"
     - export DB_PASSWORD_PROD=$DB_PASSWORD
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
-    - helm repo add traefik https://traefik.github.io/charts
-    - helm repo update
+    - $BIN_DIR/helm repo add traefik https://traefik.github.io/charts
+    - $BIN_DIR/helm repo update
     - export KUBECONFIG=$KUBECONFIG_FILE
-    - sudo kubectl get nodes
-    - sudo -E helm history traefik -n kube-system || echo "No previous traefik release found"
-    - sudo kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
-    - sudo -E helm uninstall traefik --kubeconfig $KUBECONFIG -n kube-system || true
-    - if helm status traefik -n kube-system > /dev/null 2>&1; then 
+    - $BIN_DIR/kubectl get nodes
+    - $BIN_DIR/helm history traefik -n kube-system || echo "No previous traefik release found"
+    - $BIN_DIR/kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
+    - $BIN_DIR/helm uninstall traefik -n kube-system || true
+    - if $BIN_DIR/helm status traefik -n kube-system > /dev/null 2>&1; then
         echo "Traefik exists --> upgrading...";
-        sudo -E helm upgrade traefik traefik/traefik -n kube-system --kubeconfig $KUBECONFIG --timeout 10m0s --atomic; 
-      else  
+        $BIN_DIR/helm upgrade traefik traefik/traefik -n kube-system --timeout 10m0s --atomic;
+      else
         echo "Traefik not installed or broken, reinstalling...";
-        sudo -E helm uninstall traefik -n kube-system --kubeconfig $KUBECONFIG || true;
-        sudo -E helm upgrade --install traefik traefik/traefik --kubeconfig $KUBECONFIG --namespace kube-system --create-namespace --timeout 10m0s --atomic --set service.type=LoadBalancer;
+        $BIN_DIR/helm uninstall traefik -n kube-system || true;
+        $BIN_DIR/helm upgrade --install traefik traefik/traefik --namespace kube-system --create-namespace --timeout 10m0s --atomic --set service.type=LoadBalancer;
       fi
-    - sudo kubectl delete pods --all -n $NAMESPACE || true
-    - sudo -E helm uninstall $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG || true
-    - helm template $RELEASE_NAME $CHART_DIR -f $CHART_DIR/values.yaml -f $CHART_DIR/values-prod.yaml
-    - if helm status $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG > /dev/null 2>&1; then
-        echo "Release $RELEASE_NAME exists in namespace $NAMESPACE, upgrading..."
-        sudo -E helm upgrade $RELEASE_NAME $CHART_DIR \
-          --kubeconfig $KUBECONFIG \
+    - $BIN_DIR/kubectl delete pods --all -n $NAMESPACE || true
+    - $BIN_DIR/helm uninstall $RELEASE_NAME -n $NAMESPACE || true
+    - $BIN_DIR/kubectl delete pvc -l app.kubernetes.io/instance=$RELEASE_NAME -n $NAMESPACE || true
+    - $BIN_DIR/helm template $RELEASE_NAME $CHART_DIR -f $CHART_DIR/values.yaml -f $CHART_DIR/values-prod.yaml
+    - if $BIN_DIR/helm status $RELEASE_NAME -n $NAMESPACE > /dev/null 2>&1; then
+        echo "Release $RELEASE_NAME exists in namespace $NAMESPACE, upgrading...";
+        $BIN_DIR/helm upgrade $RELEASE_NAME $CHART_DIR \
           --namespace $NAMESPACE \
           -f $CHART_DIR/values.yaml \
           -f $CHART_DIR/values-prod.yaml \
@@ -88,9 +78,8 @@ deploy_prod:
           --set-string db.password="$DB_PASSWORD" \
           --debug;
       else
-        echo "Release $RELEASE_NAME does not exist in namespace $NAMESPACE, installing..."
-        sudo -E helm install $RELEASE_NAME $CHART_DIR \
-          --kubeconfig $KUBECONFIG \
+        echo "Release $RELEASE_NAME does not exist in namespace $NAMESPACE, installing...";
+        $BIN_DIR/helm install $RELEASE_NAME $CHART_DIR \
           --namespace $NAMESPACE \
           --create-namespace \
           -f $CHART_DIR/values.yaml \
@@ -99,21 +88,19 @@ deploy_prod:
           --set-string db.password="$DB_PASSWORD" \
           --debug;
       fi
-    - sleep 20  
-    - helm list -n $NAMESPACE 
-    - sudo kubectl get ns 
-    - sudo kubectl get pods -n $NAMESPACE
-    - sudo kubectl describe pods -n $NAMESPACE
-    - sudo kubectl get svc -n $NAMESPACE
-    - sudo kubectl get statefulset -n $NAMESPACE
-    #- sudo kubectl logs pods -n $NAMESPACE
-    #- sudo kubectl describe statefulset $RELEASE_NAME-db -n $NAMESPACE
-    - sudo -E helm get manifest $RELEASE_NAME -n $NAMESPACE --kubeconfig $KUBECONFIG | head -40
-    - sudo kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
-    - sudo kubectl get svc traefik -n kube-system
+    - sleep 20
+    - $BIN_DIR/helm list -n $NAMESPACE
+    - $BIN_DIR/kubectl get ns
+    - $BIN_DIR/kubectl get pods -n $NAMESPACE
+    - $BIN_DIR/kubectl describe pods -n $NAMESPACE
+    - $BIN_DIR/kubectl get svc -n $NAMESPACE
+    - $BIN_DIR/kubectl get statefulset -n $NAMESPACE
+    - $BIN_DIR/helm get manifest $RELEASE_NAME -n $NAMESPACE | head -40
+    - $BIN_DIR/kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=120s
+    - $BIN_DIR/kubectl get svc traefik -n kube-system
     - |
       for i in {1..10}; do
-        export SERVICE_IP=$(kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
+        export SERVICE_IP=$($BIN_DIR/kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
         [ -n "$SERVICE_IP" ] && break;
         sleep 10;
       done
