@@ -13,7 +13,9 @@ spec:
             command: ["sh", "-c"]
             args:
               - |
-                export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD_PROD}@fastapi-prod-db:5432/fastapi_traefik_prod" && \
+                echo "DB_PASSWORD=$DB_PASSWORD"
+                export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD}fastapi-prod-db:5432/fastapi_traefik_prod"
+                echo "DATABASE_URL=$DATABASE_URL"
                 alembic upgrade head
             env:
               - name: DB_PASSWORD
@@ -21,4 +23,5 @@ spec:
                   secretKeyRef:
                     name: fastapi-prod-db
                     key: POSTGRES_PASSWORD
+
 
