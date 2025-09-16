@@ -16,6 +16,7 @@ migrate_db:
   image: python:3.11-slim
   stage: migrate
   before_script:
+    - pip uninstall -y pydantic
     - pip install --upgrade pip
     - pip install --user -r requirements.txt
     - export PATH="$HOME/.local/bin:$PATH"

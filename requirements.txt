@@ -8,3 +8,4 @@ databases[sqlite]
 sqlalchemy
 pytest
 alembic
+pydantic>=1.6.1,<1.10.5
