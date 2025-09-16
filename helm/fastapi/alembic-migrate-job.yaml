@@ -14,7 +14,7 @@ spec:
             args:
               - |
                 echo "DB_PASSWORD=$DB_PASSWORD"
-                export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD}fastapi-prod-db:5432/fastapi_traefik_prod"
+                export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD}@fastapi-prod-db:5432/fastapi_traefik_prod"
                 echo "DATABASE_URL=$DATABASE_URL"
                 alembic upgrade head
             env:
