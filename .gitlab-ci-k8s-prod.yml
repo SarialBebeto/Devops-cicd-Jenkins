@@ -24,7 +24,7 @@ migrate_db:
   script:
     - alembic upgrade head
   variables:
-    DATABASE_URL: "postgresql://fastapi_traefik_prod:fastapi_traefik_prod@db:5432/fastapi_traefik_prod"
+    DATABASE_URL: "postgresql://fastapi_traefik_prod:fastapi_traefik_prod@fastapi-prod-db:5432/fastapi_traefik_prod"
   only:
     - main
   tags:
