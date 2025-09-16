@@ -21,6 +21,16 @@ migrate_db:
     - pip install --user -r requirements.txt
     - export PATH="$HOME/.local/bin:$PATH"
     - export PYTHONPATH=.
+    # Wait for Postgres service to be ready in the production namespace
+    - |
+      for i in {1..20}; do
+        if getent hosts fastapi-prod-db > /dev/null; then
+          echo "Postgres service fastapi-prod-db is reachable"; break;
+        else
+          echo "Waiting for Postgres service fastapi-prod-db..."; sleep 3;
+        fi
+        if [ "$i" -eq 20 ]; then echo "Postgres service not reachable after 60s"; exit 1; fi
+      done
   script:
     - alembic upgrade head
   variables:
