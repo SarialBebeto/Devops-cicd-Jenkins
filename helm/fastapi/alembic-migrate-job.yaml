@@ -9,15 +9,8 @@ spec:
       restartPolicy: Never
       containers:
         - name: alembic
-          image: python:3.11-slim
-          command: ["sh", "-c"]
-          args:
-            - |
-              pip install --upgrade pip && \
-              pip install --user -r requirements.txt && \
-              export PATH="$HOME/.local/bin:$PATH" && \
-              export PYTHONPATH=. && \
-              alembic upgrade head
+          image: sarialbebeto/alembic-migrate:latest
+          command: ["alembic", "upgrade", "head"]
           env:
             - name: DATABASE_URL
               value: "postgresql://fastapi_traefik_prod:fastapi_traefik_prod@fastapi-prod-db:5432/fastapi_traefik_prod"

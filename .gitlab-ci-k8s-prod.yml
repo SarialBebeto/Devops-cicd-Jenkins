@@ -1,4 +1,5 @@
 stages:
+  - build
   - migrate
   - deploy
 
@@ -11,6 +12,18 @@ variables:
   BIN_DIR: $CI_PROJECT_DIR/bin
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   DB_PASSWORD: "traefikapi2025@"
+
+build_image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin 
+    - docker build -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:latest" .
+    - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:latest"
+  only:
+    - main
 
 migrate_db:
   image: bitnami/kubectl:latest
