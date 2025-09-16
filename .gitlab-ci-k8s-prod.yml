@@ -29,10 +29,11 @@ migrate_db:
   image: bitnami/kubectl:latest
   stage: migrate
   script:
-    - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n production
-    - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n production
-    - kubectl logs job/alembic-migrate -n production
-    - kubectl delete job alembic-migrate -n production
+    - kubectl delete job alembic-migrate -n $NAMESPACE
+    - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n $NAMESPACE
+    - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n $NAMESPACE
+    - kubectl logs job/alembic-migrate -n $NAMESPACE
+    - kubectl delete job alembic-migrate -n $NAMESPACE
   only:
     - main
   tags:
