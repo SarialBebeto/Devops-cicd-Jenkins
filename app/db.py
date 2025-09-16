@@ -8,6 +8,8 @@ from .config import settings
 database = databases.Database(settings.db_url)
 metadata = sqlalchemy.MetaData()
 
+engine = sqlalchemy.create_engine(settings.db_url)
+
 
 class BaseMeta(ormar.ModelMeta):
     metadata = metadata
@@ -29,5 +31,16 @@ def init_db():
         raise RuntimeError("DB not reachable during startup")
     metadata.create_all(engine)
 
-engine = sqlalchemy.create_engine(settings.db_url)
+for i in range(10):
+    try:
+        connection = engine.connect()
+        connection.close()
+        break
+    except Exception as e:
+        print(f"DB not ready, retrying in 3s: {e}")
+        time.sleep(3)
+else:
+    raise RuntimeError("DB not reachable after 10 attempts")
+
+# engine = sqlalchemy.create_engine(settings.db_url)
 metadata.create_all(engine)
