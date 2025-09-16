@@ -6,7 +6,7 @@ import ormar
 import sqlalchemy
 import time
 
-from .config import settings
+from app.config import settings
 
 database = databases.Database(settings.db_url)
 metadata = sqlalchemy.MetaData()
