@@ -30,6 +30,7 @@ migrate_db:
   stage: migrate
   script:
     - kubectl delete job alembic-migrate -n $NAMESPACE
+    - kubectl delete pods --all -n $NAMESPACE
     - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n $NAMESPACE
     - sleep 20
     - kubectl logs job/alembic-migrate -n $NAMESPACE
