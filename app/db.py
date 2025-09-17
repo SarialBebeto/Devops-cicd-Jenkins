@@ -45,7 +45,7 @@ def wait_for_db(max_retries=40, initial_delay=5, backoff_factor=2):
 
 def init_db():
     # Create all tables. Only used for test/CI.
-    engine = sqlalchemy.create_engine(settings.db_url)
-    if not try_connect(engine, retries=30, delay=1):
-        raise RuntimeError("DB not reachable during startup")
-    metadata.create_all(engine)
+    # engine = sqlalchemy.create_engine(settings.db_url)
+    # if not try_connect(engine, retries=30, delay=1):
+    #     raise RuntimeError("DB not reachable during startup")
+    # metadata.create_all(engine)
