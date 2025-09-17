@@ -43,7 +43,7 @@ def wait_for_db(max_retries=40, initial_delay=5, backoff_factor=2):
     print(f"DB not reachable after {max_retries} attempts")
     return False
 
-def init_db():
+#def init_db():
     # Create all tables. Only used for test/CI.
     # engine = sqlalchemy.create_engine(settings.db_url)
     # if not try_connect(engine, retries=30, delay=1):
