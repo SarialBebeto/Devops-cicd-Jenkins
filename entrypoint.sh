@@ -5,7 +5,7 @@ echo "Waiting for Postgres.."
 # wait until pg_isready confirms DB is accepting connections
 until pg_isready -h fastapi-prod-db -p 5432 -U "${POSTGRES_USER:-fastapi_traefik_prod}"; do
    echo "Postgres is unavailable - sleeping"
-   sleep 1
+   sleep 5
 done
 
 echo "Postgres is up - starting server"
