@@ -27,7 +27,7 @@ class User(ormar.Model):
 
 engine = sqlalchemy.create_engine(settings.db_url)
 max_retries = 40
-delay = 10
+delay = 20
 for i in range(max_retries):
     try:
         connection = engine.connect()
