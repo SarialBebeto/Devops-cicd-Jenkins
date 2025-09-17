@@ -25,22 +25,25 @@ class User(ormar.Model):
 
 # Only run table creation after a successful DB connection
 
-engine = sqlalchemy.create_engine(settings.db_url)
-max_retries = 40
-delay = 20
-for i in range(max_retries):
-    try:
-        connection = engine.connect()
-        connection.close()
-        print(f"DB connection successful after {i+1} attempt(s)")
-        break
-    except Exception as e:
-        print(f"DB not ready, retrying in {delay}s: {e}")
-        time.sleep(delay)
-else:
-    raise RuntimeError(f"DB not reachable after {max_retries} attempts")
 
-metadata.create_all(engine)
+def wait_for_db(max_retries=40, initial_delay=5, backoff_factor=2):
+    """Wait for DB to become available with exponential backoff."""
+    engine = sqlalchemy.create_engine(settings.db_url)
+    delay = initial_delay
+    for i in range(max_retries):
+        try:
+            print(f"Attempt {i+1}: Connecting to DB at {settings.db_url}")
+            connection = engine.connect()
+            connection.close()
+            print(f"DB connection successful after {i+1} attempt(s)")
+            metadata.create_all(engine)
+            return True
+        except Exception as e:
+            print(f"DB not ready, retrying in {delay}s: {e}")
+            time.sleep(delay)
+            delay = min(delay * backoff_factor, 60)  # Cap delay at 60s
+    print(f"DB not reachable after {max_retries} attempts")
+    return False
 
 def init_db():
     # Create all tables. Only used for test/CI.
