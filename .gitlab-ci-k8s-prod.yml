@@ -28,6 +28,7 @@ build_image:
 migrate_db:
   image: bitnami/kubectl:latest
   stage: migrate
+  needs: ["build_image"]
   script:
     - kubectl delete job alembic-migrate -n $NAMESPACE
     - kubectl delete pods --all -n $NAMESPACE
