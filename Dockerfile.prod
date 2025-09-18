@@ -19,4 +19,4 @@ CMD ["/start.sh"]
 
 COPY . .
 
-RUN cat /app/db.py
+RUN cat /app/app/db.py

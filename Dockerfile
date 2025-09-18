@@ -18,4 +18,4 @@ RUN apt-get update && apt-get install -y curl
 # copy project
 COPY . .
 
-RUN cat /app/db.py
+RUN cat /app/app/db.py
