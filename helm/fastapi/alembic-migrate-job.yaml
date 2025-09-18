@@ -13,7 +13,10 @@ spec:
             command: ["sh", "-c"]
             args:
               - |
-                echo "DB_PASSWORD=$DB_PASSWORD"
+                until pg_isready -h fastapi-prod-db -p 5432 -U fastapi_traefik_prod; do
+                  echo 'Waiting for Postgres...'
+                  sleep 10
+                done
                 export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD}@fastapi-prod-db:5432/fastapi_traefik_prod"
                 echo "DATABASE_URL=$DATABASE_URL"
                 alembic upgrade head
