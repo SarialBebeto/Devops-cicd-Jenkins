@@ -21,11 +21,11 @@ build:
     - docker:dind
   script:
     - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin 
-    - docker build -t "$DOCKER_REGISTRY_USER/fastapi-dev:latest" -f Dockerfile .
+    - docker build --no-cache -t "$DOCKER_REGISTRY_USER/fastapi-dev:latest" -f Dockerfile .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-dev:latest"
-    - docker build -t "$DOCKER_REGISTRY_USER/fastapi-prod:latest" -f Dockerfile.prod .
+    - docker build --no-cache -t "$DOCKER_REGISTRY_USER/fastapi-prod:latest" -f Dockerfile.prod .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-prod:latest"
-    - docker build -t "$DOCKER_REGISTRY_USER/fastapi-traefik:latest" -f Dockerfile.traefik .
+    - docker build --no-cache -t "$DOCKER_REGISTRY_USER/fastapi-traefik:latest" -f Dockerfile.traefik .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:latest"
   when: manual # just for testing purposes
 

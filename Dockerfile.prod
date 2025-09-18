@@ -17,4 +17,6 @@ COPY entrypoint.sh /start.sh
 RUN chmod +x /start.sh
 CMD ["/start.sh"]
 
+RUN cat /app/db.py
+
 COPY . .

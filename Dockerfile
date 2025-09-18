@@ -15,5 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # just in case, install curl
 RUN apt-get update && apt-get install -y curl
 
+RUN cat /app/db.py
+
 # copy project
 COPY . .
