@@ -11,7 +11,7 @@ variables:
   KUBECONFIG_FILE: /home/gitlab-runner/.kube/config
   BIN_DIR: $CI_PROJECT_DIR/bin
   PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-  DB_PASSWORD: "traefikapi2025@"
+  DB_PASSWORD: "fastapi_traefik_prod"
 
 build_image:
   stage: build
@@ -37,7 +37,7 @@ migrate_db:
     - sleep 60
     - kubectl get secret fastapi-prod-db -n $NAMESPACE -o yaml
     - kubectl logs job/alembic-migrate -n $NAMESPACE
-    # - kubectl get pods -n $NAMESPACE
+    - kubectl get pods -n $NAMESPACE
     # - kubectl describe pods -n $NAMESPACE
     - kubectl wait --for=condition=complete --timeout=120s job/alembic-migrate -n $NAMESPACE
     - kubectl delete job alembic-migrate -n $NAMESPACE
