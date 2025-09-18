@@ -55,6 +55,7 @@ migrate_db:
 
 deploy_prod:
   stage: deploy
+  image: sarialbebeto/fastapi-prod:latest
   tags:
     - traefik-fastapi-project
   needs: ["migrate_db"]
