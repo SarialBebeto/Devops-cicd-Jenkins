@@ -51,7 +51,7 @@ db:
     pullPolicy: IfNotPresent
   port: 5432
   user: fastapi_traefik_prod
-  password: traefikapi2025@
+  password: traefikapi2025%40
   database: fastapi_traefik_prod
   storage:
     size: 5Gi
