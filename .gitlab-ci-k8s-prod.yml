@@ -33,12 +33,11 @@ migrate_db:
     - kubectl delete job alembic-migrate -n $NAMESPACE
     - kubectl delete pods --all -n $NAMESPACE
     - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n $NAMESPACE
-    - helm upgrade --install $RELEASE_NAME $CHART_DIR --set image.tag=$IMAGE_TAG
+    - helm upgrade --install $RELEASE_NAME $CHART_DIR --set image.tag=$IMAGE_TAG --namespace $NAMESPACE
     - sleep 60
     - kubectl logs job/alembic-migrate -n $NAMESPACE
     - kubectl get pods -n $NAMESPACE
     - kubectl describe pods -n $NAMESPACE
-    #- kubectl logs pods -n $NAMESPACE
     - kubectl wait --for=condition=complete --timeout=200s job/alembic-migrate -n $NAMESPACE
     - kubectl delete job alembic-migrate -n $NAMESPACE
   only:
