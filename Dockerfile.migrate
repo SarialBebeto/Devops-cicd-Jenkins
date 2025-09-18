@@ -4,5 +4,3 @@ COPY . .
 RUN pip install --upgrade pip && pip install --user -r requirements.txt
 ENV PATH="/root/.local/bin:$PATH"
 ENV PYTHONPATH=.
-COPY . .
-RUN cat /app/app/db.py
