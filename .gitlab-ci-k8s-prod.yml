@@ -19,11 +19,12 @@ build_image:
   services:
     - docker:dind
   script:
-    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin 
-    - docker build -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:latest" .
+    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin
+    - docker build --no-cache -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:latest" .
     - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:latest"
   only:
     - main
+  allow_failure: false
 
 migrate_db:
   image: bitnami/kubectl:latest
