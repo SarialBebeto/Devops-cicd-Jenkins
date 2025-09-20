@@ -36,7 +36,7 @@ migrate_db:
     - kubectl delete pvc -l app.kubernetes.io/instance=fastapi-prod -n $NAMESPACE
     - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n $NAMESPACE
     - sleep 60
-    # - kubectl get secret fastapi-prod-db -n $NAMESPACE -o yaml
+    - kubectl get secret fastapi-prod-db -n $NAMESPACE -o yaml
     - kubectl logs job/alembic-migrate -n $NAMESPACE
     - kubectl get pods -n $NAMESPACE
     - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=120s
