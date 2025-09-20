@@ -31,17 +31,20 @@ migrate_db:
   stage: migrate
   needs: ["build_image"]
   script:
-    - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
-    - kubectl delete pods --all -n $NAMESPACE
-    - kubectl delete pvc -l app.kubernetes.io/instance=fastapi-prod -n $NAMESPACE
-    - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n $NAMESPACE
-    - sleep 60
-    - kubectl get secret fastapi-prod-db -n $NAMESPACE -o yaml
-    - kubectl logs job/alembic-migrate -n $NAMESPACE
-    - kubectl get pods -n $NAMESPACE
-    - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=120s
-    - kubectl wait --for=condition=complete --timeout=120s job/alembic-migrate -n $NAMESPACE
-    - kubectl delete job alembic-migrate -n $NAMESPACE
+  # Wait for DB pod to be ready before migration
+  - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
+  # Clean up any previous migration job
+  - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
+  # Apply migration job
+  - kubectl apply -f helm/fastapi/alembic-migrate-job.yaml -n $NAMESPACE
+  # Wait for migration job to complete
+  - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n $NAMESPACE
+  # Show migration logs
+  - kubectl logs job/alembic-migrate -n $NAMESPACE
+  # Delete migration job after success
+  - kubectl delete job alembic-migrate -n $NAMESPACE
+  # Restart app deployment to ensure it picks up new DB state
+  - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
   only:
     - main
   tags:
