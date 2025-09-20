@@ -3,6 +3,11 @@ Revision ID: 0001_create_users
 Revises: 
 Create Date: 2025-09-16 00:00:00.000000
 """
+revision = '0001_create_users'
+down_revision = None
+branch_labels = None
+depends_on = None
+
 from alembic import op
 import sqlalchemy as sa
 
