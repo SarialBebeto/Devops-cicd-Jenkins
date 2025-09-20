@@ -53,6 +53,7 @@ db:
   user: fastapi_traefik_prod
   password: fastapi_traefik_prod
   database: fastapi_traefik_prod
+  host: fastapi-prod-db
   storage:
     size: 5Gi
     storageClassName: ""
