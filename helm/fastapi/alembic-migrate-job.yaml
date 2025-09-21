@@ -20,6 +20,9 @@ spec:
                 done
                 export DATABASE_URL="postgresql://fastapi_traefik_prod:${DB_PASSWORD}@fastapi-prod-db:5432/fastapi_traefik_prod"
                 echo "DATABASE_URL=$DATABASE_URL"
+                cd /workspace
+                echo "Alembic versions:"
+                ls -l alembic/versions/
                 alembic upgrade head
             env:
               - name: DB_PASSWORD
