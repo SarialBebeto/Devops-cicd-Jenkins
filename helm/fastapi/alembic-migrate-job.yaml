@@ -23,9 +23,19 @@ spec:
                 cd /workspace
                 echo "Alembic versions:"
                 ls -l alembic/versions/
-                alembic upgrade head -x debug=true
+                echo 'Alembic current BEFORE:'
                 alembic current
+                echo 'Alembic history BEFORE:'
                 alembic history
+                echo 'Running alembic upgrade head:'
+                alembic upgrade head
+                echo 'Alembic current AFTER:'
+                alembic current
+                echo 'Alembic history AFTER:'
+                alembic history
+                echo 'DB tables after migration:'
+                apt-get update && apt-get install -y postgresql-client
+                PGPASSWORD=${DB_PASSWORD} psql -h fastapi-prod-db -U fastapi_traefik_prod -d fastapi_traefik_prod -c '\dt'
             env:
               - name: DB_PASSWORD
                 valueFrom:
