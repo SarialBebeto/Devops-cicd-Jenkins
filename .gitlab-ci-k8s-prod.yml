@@ -43,6 +43,8 @@ migrate_db:
   - kubectl logs job/alembic-migrate -n $NAMESPACE
   # Delete migration job after success
   # - kubectl delete job alembic-migrate -n $NAMESPACE
+  # Delete all app pods to force new pods to connect to the up-to-date DB
+  - kubectl delete pods -l app.kubernetes.io/name=fastapi -n $NAMESPACE || true
   # Restart app deployment to ensure it picks up new DB state
   - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
   - kubectl delete pods -l app.kubernetes.io/name=fastapi -n $NAMESPACE 
