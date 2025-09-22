@@ -23,7 +23,9 @@ spec:
                 cd /workspace
                 echo "Alembic versions:"
                 ls -l alembic/versions/
-                alembic upgrade head
+                alembic upgrade head -x debug=true
+                alembic current
+                alembic history
             env:
               - name: DB_PASSWORD
                 valueFrom:

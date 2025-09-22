@@ -83,7 +83,7 @@ deploy_prod:
     - mv /tmp/linux-amd64/helm $BIN_DIR/helm
     - chmod +x $BIN_DIR/helm
     - $BIN_DIR/helm version
-    - echo "Runner=$CI_RUNNER_DESCRIPTION"
+    #- echo "Runner=$CI_RUNNER_DESCRIPTION"
     - echo "Using KUBECONFIG=$KUBECONFIG"
     - $BIN_DIR/kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
     #- $BIN_DIR/kubectl version
