@@ -31,6 +31,9 @@ migrate_db:
   stage: migrate
   needs: ["build_image"]
   script:
+  - echo "Scaling down app deployment before migration..."
+  - kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE || true
+  - echo "Running Alembic migrations..."
   - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
   # Clean up any previous migration job
   - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
@@ -42,6 +45,8 @@ migrate_db:
   - kubectl logs job/alembic-migrate -n $NAMESPACE
   # Delete all app pods to force new pods to connect to the up-to-date DB
   # - kubectl delete pods -l app.kubernetes.io/name=fastapi -n $NAMESPACE || true
+  - echo "Scaling up app deployment after migration..."
+  - kubectl scale deployment/$RELEASE_NAME --replicas=3 -n $NAMESPACE || true
   # Restart app deployment to ensure it picks up new DB state
   - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
   only:
