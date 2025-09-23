@@ -132,6 +132,7 @@ deploy_prod:
     - $BIN_DIR/kubectl logs deployment/$RELEASE_NAME -n $NAMESPACE --tail=200
     - $BIN_DIR/kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=300s
     - $BIN_DIR/kubectl get svc traefik -n kube-system
+    - export HEALTHCHECK_PATH="/"
     - |
       for i in {1..10}; do
         export SERVICE_IP=$($BIN_DIR/kubectl get svc traefik -n kube-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
@@ -139,8 +140,9 @@ deploy_prod:
         sleep 10;
       done
     - 'echo "Service IP: $SERVICE_IP"'
-    - if [ -n "$SERVICE_IP" ]; then
-        curl -v -H "Host: fastapi-traefik.prod-fastapi.ddns-ip.net" http://$SERVICE_IP || (echo "HTTP Health check failed!" && exit 1);
+    - |
+      if [ -n "$SERVICE_IP" ]; then
+        curl -v -H "Host: fastapi-traefik.prod-fastapi.ddns-ip.net" http://$SERVICE_IP:80/ || { echo "HTTP Health check failed!"; exit 1; }
       else
         echo "Service IP not found!" && exit 1;
       fi
