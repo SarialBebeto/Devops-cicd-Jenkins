@@ -1,15 +1,58 @@
 stages:
- - deploy
+  - build
+  - migrate
+  - deploy
 
 variables:
   RELEASE_NAME: fastapi-dev
   NAMESPACE: dev
   CHART_DIR: ./devops-project/helm/fastapi
   IMAGE_TAG: latest
+  KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
+  DB_PASSWORD: "fastapi_traefik"
+  BIN_DIR: $CI_PROJECT_DIR/bin
+  PATH: $CI_PROJECT_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+build_image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin
+    - docker build --no-cache -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:dev" .
+    - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:dev"
+  only:
+    - dev
+  allow_failure: false
+
+migrate_db:
+  image: bitnami/kubectl:latest
+  stage: migrate
+  needs: ["build_image"]
+  script:
+    - echo "Scaling down app deployment before migration..."
+    - kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE || true
+    - echo "Running Alembic migrations..."
+    - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
+    - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
+    - kubectl apply -f $CHART_DIR/alembic-migrate-job-dev.yaml -n $NAMESPACE
+    - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n $NAMESPACE
+    - kubectl logs job/alembic-migrate -n $NAMESPACE
+    - echo "Scaling up app deployment after migration..."
+    - kubectl scale deployment/$RELEASE_NAME --replicas=1 -n $NAMESPACE || true
+    - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
+  only:
+    - dev
+  tags:
+    - traefik-fastapi-project
+  allow_failure: false
+  when: on_success
 
 deploy_dev:
   stage: deploy
   image: projectoss/helm-client:latest
+  needs: ["migrate_db"]
   before_script:
     - mkdir -p $CI_PROJECT_DIR/.kube
     - echo "$KUBE_CONFIG" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
@@ -19,21 +62,38 @@ deploy_dev:
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
     - helm version
-    - kubectl version 
+    - kubectl version
     - export DB_PASSWORD="$DB_PASSWORD_DEV"
   script:
     - helm repo add traefik https://traefik.github.io/charts
-    - helm repo update  
-    - helm upgrade --install traefik traefik/traefik \
-        --set service.type=LoadBalancer 
-    - helm upgrade --install fastapi-dev $CHART_DIR \
+    - helm repo update
+    - helm upgrade --install traefik traefik/traefik --set service.type=LoadBalancer
+    - helm upgrade --install $RELEASE_NAME $CHART_DIR \
         --namespace $NAMESPACE \
         --create-namespace \
         -f $CHART_DIR/values.yaml \
         -f $CHART_DIR/values-dev.yaml \
         --set image.tag=$IMAGE_TAG \
         --set-string db.password="$DB_PASSWORD"
+    - sleep 30
+    - kubectl get pods -n $NAMESPACE
+    - kubectl get svc -n $NAMESPACE
+    - kubectl rollout status deployment/$RELEASE_NAME -n $NAMESPACE --timeout=300s
+    - |
+      for i in {1..10}; do
+        export SERVICE_IP=$($BIN_DIR/kubectl get svc traefik -n kube-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
+        [ -n "$SERVICE_IP" ] && break;
+        sleep 10;
+      done
+    - 'echo "Service IP: $SERVICE_IP"'
+    - |
+      if [ -n "$SERVICE_IP" ]; then
+        curl -vk http://$SERVICE_IP:8000/ || { echo "HTTP Health check failed!"; exit 1; }
+      else
+        echo "Service IP not found!" && exit 1;
+      fi
+    - echo "Deployment to dev successful!"
   environment:
     name: dev
-    url: https://dev.example.com
+    url: https://fastapi-traefik.dev-fastapi.ddns-ip.net
   when: manual

@@ -3,9 +3,6 @@ stages:
  - build
  - test
  - deploy
-#  - deploy_with_docker
-#  - deploy_with_kubernetes
-#  - deploy_with_aws
 
 update:
   stage: update
@@ -27,7 +24,6 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-prod:latest"
     - docker build --no-cache -t "$DOCKER_REGISTRY_USER/fastapi-traefik:latest" -f Dockerfile.traefik .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:latest"
-  when: manual # just for testing purposes
 
 # unit-test:
 #   stage: test
