@@ -31,10 +31,6 @@ migrate_db:
   stage: migrate
   needs: ["build_image"]
   script:
-  # before migration
-  # - kubectl delete pvc -l app.kubernetes.io/instance=fastapi-prod -n $NAMESPACE
-  # - kubectl delete pod -l role=db -n $NAMESPACE
-  # Wait for DB pod to be ready before migration
   - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
   # Clean up any previous migration job
   - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
@@ -45,7 +41,7 @@ migrate_db:
   # Show migration logs
   - kubectl logs job/alembic-migrate -n $NAMESPACE
   # Delete all app pods to force new pods to connect to the up-to-date DB
-  - kubectl delete pods -l app.kubernetes.io/name=fastapi -n $NAMESPACE || true
+  # - kubectl delete pods -l app.kubernetes.io/name=fastapi -n $NAMESPACE || true
   # Restart app deployment to ensure it picks up new DB state
   - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
   only:
@@ -89,7 +85,6 @@ deploy_prod:
     - echo "Using KUBECONFIG=$KUBECONFIG"
     - $BIN_DIR/kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'; echo
     - $BIN_DIR/kubectl get nodes
-    #- echo "Password=$DB_PASSWORD"
     - export DB_PASSWORD_PROD=$DB_PASSWORD
     - export DB_PASSWORD="$DB_PASSWORD_PROD"
   script:
