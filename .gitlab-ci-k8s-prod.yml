@@ -134,7 +134,7 @@ deploy_prod:
     - $BIN_DIR/kubectl get svc traefik -n kube-system
     - |
       for i in {1..10}; do
-        export SERVICE_IP=$($BIN_DIR/kubectl get svc $RELEASE_NAME -n $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
+        export SERVICE_IP=$($BIN_DIR/kubectl get svc traefik -n kube-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}');
         [ -n "$SERVICE_IP" ] && break;
         sleep 10;
       done
