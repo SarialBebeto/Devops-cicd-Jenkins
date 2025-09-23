@@ -118,7 +118,7 @@ deploy_prod:
        echo "Release $RELEASE_NAME does not exist in namespace $NAMESPACE, installing...";
        $BIN_DIR/helm install $RELEASE_NAME $CHART_DIR --namespace $NAMESPACE --create-namespace -f $CHART_DIR/values.yaml -f $CHART_DIR/values-prod.yaml --set image.tag=$IMAGE_TAG --set-string db.password="$DB_PASSWORD" --debug;
      fi
-    - sleep 60   # give the cluster some time to start the pods
+    - sleep 60   # give the cluster time to start the pods
     - $BIN_DIR/helm list -n $NAMESPACE
     - $BIN_DIR/kubectl get ns
     - $BIN_DIR/kubectl get pods -n $NAMESPACE
