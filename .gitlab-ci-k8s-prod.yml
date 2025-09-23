@@ -142,7 +142,7 @@ deploy_prod:
     - 'echo "Service IP: $SERVICE_IP"'
     - |
       if [ -n "$SERVICE_IP" ]; then
-        curl -v -H "Host: fastapi-traefik.prod-fastapi.ddns-ip.net" http://$SERVICE_IP:80/ || { echo "HTTP Health check failed!"; exit 1; }
+        curl -v -H "Host: fastapi-traefik.prod-fastapi.ddns-ip.net" https://$SERVICE_IP:80/ || { echo "HTTP Health check failed!"; exit 1; }
       else
         echo "Service IP not found!" && exit 1;
       fi
