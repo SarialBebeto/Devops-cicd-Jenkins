@@ -52,7 +52,7 @@ migrate_db:
   only:
     - main
   tags:
-    - runner-treafik 
+    - traefik-fastapi-project 
   allow_failure: false
   when: on_success
 
@@ -60,7 +60,7 @@ deploy_prod:
   stage: deploy
   image: sarialbebeto/fastapi-prod:latest
   tags:
-    - runner-treafik 
+    - traefik-fastapi-project 
   needs: ["migrate_db"]
   before_script:
     - whoami
