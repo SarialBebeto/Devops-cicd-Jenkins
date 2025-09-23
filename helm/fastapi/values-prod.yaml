@@ -31,17 +31,15 @@ ingress:
   enabled: true
   className: "traefik"
   annotations:
-    #traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    # traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.tls: "false"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
   hosts:
     - host: fastapi-traefik.prod-fastapi.ddns-ip.net
       paths:
         - path: /
           pathType: Prefix
-  # tls: []  # TLS temporarily disabled for debugging
+  # tls: []  
 
 db:
   image:
@@ -86,6 +84,17 @@ autoscaling:
 volumes: []
 volumeMounts: []
 
+additionalArguments:
+  - "--certificatesresolvers.letsencrypt.acme.email=tsamosarial@yahoo.fr"
+  - "--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json"
+  - "--entrypoints.websecure.address=:443"
+  - "--entrypoints.web.address=:80"
+
+persistence:
+  enabled: true
+  path: /data
+  size: 1Gi
+  accessMode: ReadWriteOnce
 nodeSelector: {}
 tolerations: []
 affinity: {}
