@@ -1,13 +1,17 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.db import database
+from app.db import database,metadata
+import sqlalchemy
 
 client = TestClient(app)
 
 @pytest.fixture(autouse=True, scope="module")
 def setup_and_teardown():
     # this runs before and after all tests in this file
+    if str(database.url).startswith("sqlite"):
+        engine = sqlalchemy.create_engine(str(database.url))
+        metadata.create_all(engine)  # Create the tables
     with TestClient(app) as test_client:
         yield test_client  # this is where the testing happens
 
