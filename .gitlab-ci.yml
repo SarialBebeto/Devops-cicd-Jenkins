@@ -109,6 +109,7 @@ aws_deploy_dev:
     include:
       - local: .gitlab-ci-aws-dev.yml
     strategy: depend
+  when: manual
 
 aws_deploy_prod:
   stage: deploy
