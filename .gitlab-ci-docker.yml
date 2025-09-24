@@ -161,10 +161,10 @@ deploy_prod:
    - |
      docker run --rm \
        --network "$(docker network ls --filter name=_default --format '{{.Name}}')" \
-       -e DATABASE_URL=postgresql://fastapi_traefik_prod:fastapi_traefik_prod@fastapi-prod-db:5432/fastapi_traefik_prod \
+       -e DATABASE_URL=postgresql://fastapi_traefik_prod:fastapi_traefik_prod@db:5432/fastapi_traefik_prod \
        devops-project-migrate \
        sh -c "\
-         until pg_isready -h fastapi-prod-db -p 5432 -U fastapi_traefik_prod; do \
+         until pg_isready -h db -p 5432 -U fastapi_traefik_prod; do \
            echo 'Waiting for Postgres...'; \
            sleep 5; \
          done; \
