@@ -24,7 +24,6 @@ update:
     paths:
       - .venv/
     expire_in: 1 hour
-  when: manual
 
 build:
   stage: build
@@ -41,7 +40,6 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:$IMAGE_TAG"
   only:
     - main
-  when: manual
 
 unit-test:
   stage: test
@@ -69,7 +67,6 @@ unit-test:
       junit: report.xml
   only:
     - main   
-  when: manual # just for testing purposes
 
 smoke-test:
   stage: test
@@ -146,7 +143,6 @@ deploy_dev:
   only:
     - main
     - dev
-  when: manual
 
 deploy_prod:
   stage: deploy_prod
@@ -155,11 +151,8 @@ deploy_prod:
     - docker:dind
   script:
    - echo "Deploying to Production..."
-   # Start only the db service
    - docker-compose -f docker-compose.prod.yml up -d db
-   # Build local migration image
    - docker build -t devops-project-migrate -f Dockerfile.migrate .
-   # Run migrations using local image and correct prod DATABASE_URL (host=db)
    - |
      docker run --rm \
        --network "$(docker network ls --filter name=_default --format '{{.Name}}')" \
