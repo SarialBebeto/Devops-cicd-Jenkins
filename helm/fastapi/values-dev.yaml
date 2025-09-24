@@ -82,12 +82,12 @@ db:
   user: fastapi_traefik
   password: fastapi_traefik
   database: fastapi_traefik
-  host: fastapi-dev-db
+  host: db
   storage:
     size: 5Gi
     storageClassName: ""
   environment:
-    - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@fastapi-dev-db:5432/fastapi_traefik
+    - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
 
 
 volumes: []

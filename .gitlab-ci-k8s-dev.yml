@@ -31,7 +31,7 @@ migrate_db:
   stage: migrate
   needs: ["build_image"]
   script:
-    - echo "Scaling down app deployment before migration..."
+    - echo "Scaling down app deployment before migration...."
     - kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE || true
     - echo "Running Alembic migrations..."
     - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
@@ -39,7 +39,7 @@ migrate_db:
     - kubectl apply -f $CHART_DIR/alembic-migrate-job-dev.yaml -n $NAMESPACE
     - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n $NAMESPACE
     - kubectl logs job/alembic-migrate -n $NAMESPACE
-    - echo "Scaling up app deployment after migration..."
+    - echo "Scaling up app deployment after migration...."
     - kubectl scale deployment/$RELEASE_NAME --replicas=1 -n $NAMESPACE || true
     - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
   only:
