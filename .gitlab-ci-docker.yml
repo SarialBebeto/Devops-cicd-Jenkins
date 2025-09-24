@@ -69,6 +69,7 @@ unit-test:
       junit: report.xml
   only:
     - main   
+  when: manual # just for testing purposes
 
 smoke-test:
   stage: test
@@ -145,6 +146,7 @@ deploy_dev:
   only:
     - main
     - dev
+  when: manual
 
 deploy_prod:
   stage: deploy_prod
@@ -157,7 +159,7 @@ deploy_prod:
    - docker-compose -f docker-compose.prod.yml up -d db
    # Build local migration image
    - docker build -t devops-project-migrate -f Dockerfile.migrate .
-   # Run migrations using local image and correct prod DATABASE_URL
+   # Run migrations using local image and correct prod DATABASE_URL (host=db)
    - |
      docker run --rm \
        --network "$(docker network ls --filter name=_default --format '{{.Name}}')" \
@@ -166,7 +168,7 @@ deploy_prod:
        sh -c "\
          until pg_isready -h db -p 5432 -U fastapi_traefik_prod; do \
            echo 'Waiting for Postgres...'; \
-           sleep 5; \
+           sleep 10; \
          done; \
          alembic upgrade head \
        "
