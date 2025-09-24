@@ -87,7 +87,7 @@ smoke-test:
         sh -c "\
           until pg_isready -h db -p 5432 -U fastapi_traefik; do \
             echo 'Waiting for Postgres...'; \
-            sleep 5; \
+            sleep 10; \
           done; \
           alembic upgrade head \
         "
