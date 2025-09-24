@@ -31,17 +31,33 @@ migrate_db:
   stage: migrate
   needs: ["build_image"]
   script:
+    - kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
     - echo "Scaling down app deployment before migration...."
-    - kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE || true
+    - |
+      if kubectl get deployment/$RELEASE_NAME -n $NAMESPACE > /dev/null 2>&1; then
+        kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE;
+      else
+        echo "Deployment $RELEASE_NAME does not exist, skipping scale down.";
+      fi
     - echo "Running Alembic migrations..."
-    - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
+    - |
+      if kubectl get pods -l role=db -n $NAMESPACE | grep -q db; then
+        kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s;
+      else
+        echo "No DB pods found, skipping wait.";
+      fi
     - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
     - kubectl apply -f $CHART_DIR/alembic-migrate-job-dev.yaml -n $NAMESPACE
     - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n $NAMESPACE
     - kubectl logs job/alembic-migrate -n $NAMESPACE
     - echo "Scaling up app deployment after migration...."
-    - kubectl scale deployment/$RELEASE_NAME --replicas=1 -n $NAMESPACE || true
-    - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
+    - |
+      if kubectl get deployment/$RELEASE_NAME -n $NAMESPACE > /dev/null 2>&1; then
+        kubectl scale deployment/$RELEASE_NAME --replicas=1 -n $NAMESPACE;
+        kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE;
+      else
+        echo "Deployment $RELEASE_NAME does not exist, skipping scale up and restart.";
+      fi
   only:
     - dev
   tags:
