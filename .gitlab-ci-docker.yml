@@ -79,15 +79,18 @@ smoke-test:
     - echo "Building and running Docker container for smoke tests"
     - apk add --no-cache curl
     - docker-compose -f docker-compose.yml up -d db
+    # Build local migration image
+    - docker build -t devops-project-migrate -f Dockerfile.migrate .
+    # Run migrations using local image and correct DATABASE_URL
     - |
       docker run --rm \
         --network "$(docker network ls --filter name=_default --format '{{.Name}}')" \
         -e DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik \
-        sarialbebeto/alembic-migrate:latest \
+        devops-project-migrate \
         sh -c "\
           until pg_isready -h db -p 5432 -U fastapi_traefik; do \
             echo 'Waiting for Postgres...'; \
-            sleep 10; \
+            sleep 5; \
           done; \
           alembic upgrade head \
         "
