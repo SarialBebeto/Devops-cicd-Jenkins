@@ -6,7 +6,7 @@ stages:
 variables:
   RELEASE_NAME: fastapi-dev
   NAMESPACE: dev
-  CHART_DIR: ./devops-project/helm/fastapi
+  CHART_DIR: ./helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
   DB_PASSWORD: "fastapi_traefik"
