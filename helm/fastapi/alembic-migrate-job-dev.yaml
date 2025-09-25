@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: alembic
-          image: sarialbebeto/alembic-migrate:dev
+          image: sarialbebeto/alembic-migrate:latest
           imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
