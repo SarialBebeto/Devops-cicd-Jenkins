@@ -20,8 +20,8 @@ build_image:
     - docker:dind
   script:
     - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin
-    - docker build --no-cache -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:dev" .
-    - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:dev"
+    - docker build --no-cache -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:latest" .
+    - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:latest"
   only:
     - dev
   allow_failure: false
