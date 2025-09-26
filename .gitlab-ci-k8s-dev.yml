@@ -80,6 +80,8 @@ deploy_dev:
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
+    - ls -l $CI_PROJECT_DIR/.kube
+    - cat $CI_PROJECT_DIR/.kube/config || echo "Kubeconfig missing"
     - helm version
     - kubectl version
     - export DB_PASSWORD="$DB_PASSWORD_DEV"
