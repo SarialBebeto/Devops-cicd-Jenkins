@@ -24,6 +24,7 @@ build:
     - docker push "$DOCKER_REGISTRY_USER/fastapi-prod:latest"
     - docker build --no-cache -t "$DOCKER_REGISTRY_USER/fastapi-traefik:latest" -f Dockerfile.traefik .
     - docker push "$DOCKER_REGISTRY_USER/fastapi-traefik:latest"
+  when: manual
 
 # unit-test:
 #   stage: test
