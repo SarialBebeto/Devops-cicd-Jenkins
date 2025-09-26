@@ -39,6 +39,9 @@ migrate_db:
       else
         echo "Deployment $RELEASE_NAME does not exist, skipping scale down.";
       fi
+    - echo "deploying Postgres if not already deployed..."
+    - kubectl apply -f $CHART_DIR/postgres-dev.yaml -n $NAMESPACE
+    - kubectl wait --for=condition=ready pod -l app=postgres -n $NAMESPACE --timeout=5s
     - echo "Running Alembic migrations..."
     - |
       if kubectl get pods -l role=db -n $NAMESPACE | grep -q db; then
