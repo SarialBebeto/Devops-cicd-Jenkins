@@ -4,12 +4,9 @@ metadata:
   name: alembic-migrate
   namespace: dev
 spec:
-  template:
-    spec:
-      restartPolicy: Never
       containers:
         - name: alembic
-          image: sarialbebeto/alembic-migrate:latest
+          image: sarialbebeto/alembic-migrate:dev
           imagePullPolicy: Always
           command: ["sh", "-c"]
           args:
@@ -35,7 +32,7 @@ spec:
               alembic history
               echo 'DB tables after migration:'
               apt-get update && apt-get install -y postgresql-client
-              PGPASSWORD=${DB_PASSWORD} psql -h fastapi-dev-db -U fastapi_traefik -d fastapi_traefik -c '\dt'
+              PGPASSWORD=${DB_PASSWORD} psql -h db -U fastapi_traefik -d fastapi_traefik -c '\dt'
           env:
             - name: DB_PASSWORD
               valueFrom:
