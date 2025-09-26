@@ -14,11 +14,11 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              until pg_isready -h fastapi-dev-db -p 5432 -U fastapi_traefik; do
+              until pg_isready -h db -p 5432 -U fastapi_traefik; do
                 echo 'Waiting for Postgres...'
                 sleep 10
               done
-              export DATABASE_URL="postgresql://fastapi_traefik:${DB_PASSWORD}@fastapi-dev-db:5432/fastapi_traefik"
+              export DATABASE_URL="postgresql://fastapi_traefik:${DB_PASSWORD}@db:5432/fastapi_traefik"
               echo "DATABASE_URL=$DATABASE_URL"
               cd /workspace
               echo "Alembic versions:"
@@ -35,7 +35,7 @@ spec:
               alembic history
               echo 'DB tables after migration:'
               apt-get update && apt-get install -y postgresql-client
-              PGPASSWORD=${DB_PASSWORD} psql -h fastapi-dev-db -U fastapi_traefik -d fastapi_traefik -c '\dt'
+              PGPASSWORD=${DB_PASSWORD} psql -h db -U fastapi_traefik -d fastapi_traefik -c '\dt'
           env:
             - name: DB_PASSWORD
               valueFrom:
