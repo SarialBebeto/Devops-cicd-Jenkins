@@ -74,7 +74,7 @@ deploy_dev:
   needs: ["migrate_db"]
   before_script:
     - mkdir -p $CI_PROJECT_DIR/.kube
-    - echo "$KUBE_CONFIG" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
+    - echo "$KUBE_CONFIG_DEV" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
     - chmod 600 $CI_PROJECT_DIR/.kube/config
     - export KUBECONFIG="$CI_PROJECT_DIR/.kube/config"
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
