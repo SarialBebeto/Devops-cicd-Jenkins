@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: alembic-migrate
   namespace: dev
+spec:
   template:
     spec:
       restartPolicy: Never
