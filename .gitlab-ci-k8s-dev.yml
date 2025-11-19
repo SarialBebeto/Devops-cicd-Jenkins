@@ -6,7 +6,7 @@ stages:
 variables:
   RELEASE_NAME: fastapi-dev
   NAMESPACE: dev
-  CHART_DIR: ./devops-project/helm/fastapi
+  CHART_DIR: ./helm/fastapi
   IMAGE_TAG: latest
   KUBECONFIG_FILE: $CI_PROJECT_DIR/.kube/config
   DB_PASSWORD: "fastapi_traefik"
@@ -15,13 +15,13 @@ variables:
 
 build_image:
   stage: build
-  image: docker:latest
+  image: docker:$IMAGE_TAG
   services:
     - docker:dind
   script:
     - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USER" --password-stdin
-    - docker build --no-cache -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:dev" .
-    - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:dev"
+    - docker build --no-cache -f Dockerfile.migrate -t "$DOCKER_REGISTRY_USER/alembic-migrate:$IMAGE_TAG" .
+    - docker push "$DOCKER_REGISTRY_USER/alembic-migrate:$IMAGE_TAG"
   only:
     - dev
   allow_failure: false
@@ -31,17 +31,36 @@ migrate_db:
   stage: migrate
   needs: ["build_image"]
   script:
-    - echo "Scaling down app deployment before migration..."
-    - kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE || true
+    - kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+    - echo "Scaling down app deployment before migration...."
+    - |
+      if kubectl get deployment/$RELEASE_NAME -n $NAMESPACE > /dev/null 2>&1; then
+        kubectl scale deployment/$RELEASE_NAME --replicas=0 -n $NAMESPACE;
+      else
+        echo "Deployment $RELEASE_NAME does not exist, skipping scale down.";
+      fi
+    - echo "deploying Postgres if not already deployed..."
+    - kubectl apply -f $CHART_DIR/postgres-dev.yaml -n $NAMESPACE
+    - kubectl wait --for=condition=ready pod -l app=postgres -n $NAMESPACE --timeout=5s
     - echo "Running Alembic migrations..."
-    - kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s
+    - |
+      if kubectl get pods -l role=db -n $NAMESPACE | grep -q db; then
+        kubectl wait --for=condition=ready pod -l role=db -n $NAMESPACE --timeout=180s;
+      else
+        echo "No DB pods found, skipping wait.";
+      fi
     - if kubectl get job alembic-migrate -n $NAMESPACE > /dev/null 2>&1; then kubectl delete job alembic-migrate -n $NAMESPACE; else echo "No existing alembic-migrate job to delete"; fi
     - kubectl apply -f $CHART_DIR/alembic-migrate-job-dev.yaml -n $NAMESPACE
     - kubectl wait --for=condition=complete --timeout=180s job/alembic-migrate -n $NAMESPACE
     - kubectl logs job/alembic-migrate -n $NAMESPACE
-    - echo "Scaling up app deployment after migration..."
-    - kubectl scale deployment/$RELEASE_NAME --replicas=1 -n $NAMESPACE || true
-    - kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE
+    - echo "Scaling up app deployment after migration...."
+    - |
+      if kubectl get deployment/$RELEASE_NAME -n $NAMESPACE > /dev/null 2>&1; then
+        kubectl scale deployment/$RELEASE_NAME --replicas=1 -n $NAMESPACE;
+        kubectl rollout restart deployment/$RELEASE_NAME -n $NAMESPACE;
+      else
+        echo "Deployment $RELEASE_NAME does not exist, skipping scale up and restart.";
+      fi
   only:
     - dev
   tags:
@@ -55,12 +74,14 @@ deploy_dev:
   needs: ["migrate_db"]
   before_script:
     - mkdir -p $CI_PROJECT_DIR/.kube
-    - echo "$KUBE_CONFIG" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
+    - echo "$KUBE_CONFIG_DEV" | base64 -d > "$CI_PROJECT_DIR/.kube/config"
     - chmod 600 $CI_PROJECT_DIR/.kube/config
     - export KUBECONFIG="$CI_PROJECT_DIR/.kube/config"
     - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x kubectl
     - mv kubectl /usr/local/bin/
+    - ls -l $CI_PROJECT_DIR/.kube
+    - cat $CI_PROJECT_DIR/.kube/config || echo "Kubeconfig missing"
     - helm version
     - kubectl version
     - export DB_PASSWORD="$DB_PASSWORD_DEV"
@@ -96,4 +117,3 @@ deploy_dev:
   environment:
     name: dev
     url: https://fastapi-traefik.dev-fastapi.ddns-ip.net
-  when: manual
