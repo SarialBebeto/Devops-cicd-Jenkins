@@ -18,4 +18,6 @@ RUN apt-get update && apt-get install -y curl
 # copy project
 COPY . .
 
-RUN cat /app/app/db.py
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# RUN cat /app/app/db.py

@@ -11,7 +11,7 @@ RUN pip install -r requirements.txt
 
 RUN apt-get update && apt-get install -y curl
 
-RUN apt-get install -y docker-compose
+#RUN apt-get install -y docker-compose
 
 COPY entrypoint.sh /start.sh
 RUN chmod +x /start.sh
@@ -19,4 +19,4 @@ CMD ["/start.sh"]
 
 COPY . .
 
-RUN cat /app/app/db.py
+# RUN cat /app/app/db.py
