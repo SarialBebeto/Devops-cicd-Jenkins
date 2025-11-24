@@ -1,24 +1,34 @@
+# syntax=docker/dockerfile:1.7
+
 FROM tiangolo/uvicorn-gunicorn:python3.11-slim
 
-# USER root
+# Switch to root to install packages (base image sets a non-root user)
+USER root
 
-RUN apt-get update && apt-get install -y netcat-traditional
+# Install system dependencies in one layer
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        netcat-traditional \
+        postgresql-client \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+# Copy requirements first (better cache)
+COPY requirements.txt /app/requirements.txt
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Install Python dependencies using BuildKit cache
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r /app/requirements.txt
 
-RUN pip install --upgrade pip
-
-RUN apt-get update && apt-get install -y curl
-
-#RUN apt-get install -y docker-compose
-
+# Copy entrypoint script
 COPY entrypoint.sh /start.sh
 RUN chmod +x /start.sh
+
+# Copy project files last (so code changes don’t break cache)
+COPY . /app
+
+# Switch back to non-root user provided by the base image
+USER 1000
+
 CMD ["/start.sh"]
-
-COPY . .
-
-# RUN cat /app/app/db.py

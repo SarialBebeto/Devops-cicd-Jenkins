@@ -1,25 +1,31 @@
-# pull the official docker image
-FROM python:3.11.1-slim
+# syntax=docker/dockerfile:1.7
 
-# set work directory
+# Use official slim Python image
+FROM python:3.11.1-slim AS base
+
+# Set working directory
 WORKDIR /app
 
-# set env variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Prevent Python from writing .pyc files & ensure unbuffered output
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# install dependencies
+# Install system dependencies in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first to leverage caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --upgrade pip
+# ---------- Install Python dependencies with BuildKit cache ----------
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# just in case, install curl
-RUN apt-get update && apt-get install -y curl
-
-# copy project
+# ---------- Copy project source ----------
 COPY . .
 
+# ---------- Command ----------
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-# RUN cat /app/app/db.py
