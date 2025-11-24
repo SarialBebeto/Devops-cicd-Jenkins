@@ -34,7 +34,7 @@ pipeline {
       steps {
         script {
           sh '''
-          docker build -t $Docker_ID/fastapi-prod:$DOCKER_TAG -f Dockerfile.prod .
+          docker build -t $DOCKER_ID/fastapi-prod:$DOCKER_TAG -f Dockerfile.prod .
           sleep 6
           '''
         }
