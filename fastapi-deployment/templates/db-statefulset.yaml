@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "fastapi-deployment-prod.fullname" . }}-db
+  name: {{ include "fastapi-deployment.fullname" . }}-db
   labels:
-    app.kubernetes.io/name: {{ include "fastapi-deployment-prod.name" . }}
+    app.kubernetes.io/name: {{ include "fastapi-deployment.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  serviceName: {{ include "fastapi-deployment-prod.fullname" . }}-db
+  serviceName: {{ include "fastapi-deployment.fullname" . }}-db
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "fastapi-deployment-prod.name" . }}
+      app.kubernetes.io/name: {{ include "fastapi-deployment.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
       role: db
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "fastapi-deployment-prod.name" . }}
+        app.kubernetes.io/name: {{ include "fastapi-deployment.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         role: db
     spec:
@@ -28,7 +28,7 @@ spec:
             - containerPort: {{ .Values.db.port }}
           envFrom:
             - secretRef:
-                name: {{ include "fastapi-deployment-prod.fullname" . }}-db
+                name: {{ include "fastapi-deployment.fullname" . }}-db
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
