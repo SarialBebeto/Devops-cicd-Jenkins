@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: sarialbebeto/fastapi-dev
   pullPolicy: Always
-  tag: "latest"
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
