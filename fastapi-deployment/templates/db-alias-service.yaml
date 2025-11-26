@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: db
   labels:
-    app.kubernetes.io/name: {{ include "fastapi.name" . }}
+    app.kubernetes.io/name: {{ include "fastapi-deployment-prod.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 
 spec:
@@ -13,6 +13,6 @@ spec:
       port: {{ .Values.db.port }}
       targetPort: {{ .Values.db.port }}
   selector:
-    app.kubernetes.io/name: {{ include "fastapi.name" . }}
+    app.kubernetes.io/name: {{ include "fastapi-deployment-prod.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     role: db
