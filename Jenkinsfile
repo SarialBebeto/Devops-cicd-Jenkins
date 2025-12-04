@@ -9,6 +9,8 @@ pipeline {
       steps {
         script {
           sh '''
+          docker buildx create --name builder --use || true
+          docker buildx inspect --bootstrap
           export DOCKER_BUILDKIT=1
           export BUILDKIT_PROGRESS=plain
           docker build -t $DOCKER_ID/fastapi-dev:$DOCKER_TAG -f Dockerfile .
