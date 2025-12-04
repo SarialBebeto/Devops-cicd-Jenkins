@@ -5,16 +5,40 @@ pipeline {
   }
   agent any 
   stages {
+
+    stage('Install Docker Buildx') {
+      steps {
+        sh '''
+        echo "=== Installing Docker Buildx ==="
+
+        # Create plugins folder if missing
+        mkdir -p ~/.docker/cli-plugins
+
+        # Download latest docker buildx binary
+        BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep tag_name | cut -d '"' -f 4)
+        echo "Installing buildx version: $BUILDX_VERSION"
+
+        curl -L https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-amd64 \
+            -o ~/.docker/cli-plugins/docker-buildx
+
+        chmod +x ~/.docker/cli-plugins/docker-buildx
+
+        echo "=== Buildx installed ==="
+        docker buildx version
+        '''
+            }
+        }
+
+
+
     stage('Docker Build images') { // docker build image stage
       steps {
         script {
           sh '''
-          docker buildx create --name builder --use || true
-          docker buildx inspect --bootstrap
           export DOCKER_BUILDKIT=1
           export BUILDKIT_PROGRESS=plain
-          docker build -t $DOCKER_ID/fastapi-dev:$DOCKER_TAG -f Dockerfile .
-          docker build -t $DOCKER_ID/fastapi-prod:$DOCKER_TAG -f Dockerfile.prod .
+          docker buildx build -t $DOCKER_ID/fastapi-dev:$DOCKER_TAG -f Dockerfile .
+          docker buildx build -t $DOCKER_ID/fastapi-prod:$DOCKER_TAG -f Dockerfile.prod .
           sleep 6
           '''
         }
