@@ -34,33 +34,6 @@ pipeline {
       }
     }
 
-    // stage('Docker Build prod image') { // docker build image stage
-    //   steps {
-    //     script {
-    //       sh '''
-    //       export DOCKER_BUILDKIT=1
-    //       export BUILDKIT_PROGRESS=plain
-    //       docker build -t $DOCKER_ID/fastapi-prod:$DOCKER_TAG -f Dockerfile.prod .
-    //       sleep 6
-    //       '''
-    //     }
-    //   }
-    // }
-
-    // stage('Docker Push prod image') { 
-    //   environment {
-    //         DOCKER_PASS = credentials("DOCKER_HUB_PASS") // we retrieve docker password from secret text called docker_hub_pass saved on jenkins
-    //     }
-    //   steps {
-    //     script {
-    //       sh '''
-    //       docker login -u $DOCKER_ID -p $DOCKER_PASS
-    //       docker push $DOCKER_ID/fastapi-prod:$DOCKER_TAG
-    //       '''
-    //     }
-    //   }
-    // }
-
     stage('Deployment in dev'){
       environment
       {
