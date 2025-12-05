@@ -79,6 +79,7 @@ pipeline {
           sleep 5
           kubectl get pods -n dev
           kubectl get svc -n dev
+          kubectl logs app-fastapi-deployment-db-0 -n dev
           '''
         }
       }
