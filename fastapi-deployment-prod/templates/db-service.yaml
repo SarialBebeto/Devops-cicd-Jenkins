@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "fastapi-deployment.fullname" . }}-db
+  name: {{ include "fastapi-deployment-prod.fullname" . }}-db
 spec:
   type: ClusterIP
   ports:
@@ -9,7 +9,7 @@ spec:
       port: {{ .Values.db.port }}
       targetPort: {{ .Values.db.port }}
   selector:
-    app.kubernetes.io/name: {{ include "fastapi-deployment.name" . }}
+    app.kubernetes.io/name: {{ include "fastapi-deployment-prod.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     role: db
 
