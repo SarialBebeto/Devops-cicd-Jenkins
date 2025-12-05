@@ -4,9 +4,30 @@ pipeline {
     DOCKER_TAG = "v.${BUILD_ID}.0" 
   }
   agent any 
+ 
+
+  paramters {
+    choice(
+      name: 'STAGE_TO_RUN',
+      choices: [
+        'NONE',
+        'INSTALL_BUILDX',
+        'BUILD_IMAGES',
+        'PUSH_IMAGES',
+        'DEPLOY_DEV',
+        'DEPLOY_STAGING',
+        'DEPLOY_PROD'
+      ],
+      description: 'Choose which stage you want to run manually'
+    )
+  }
+
   stages {
 
     stage('Install Docker Buildx') {
+      when {
+        expression { params.STAGE_TO_RUN == 'INSTALL_BUILDX'}
+      }
       steps {
         sh '''
         echo "=== Installing Docker Buildx ==="
@@ -32,9 +53,10 @@ pipeline {
 
 
     stage('Docker Build images') { // docker build image stage
+      when {
+        expression { params.STAGE_TO_RUN == 'BUILD_IMAGES' }
+      }
       steps {
-        timeout(time: 15, unit: "MINUTES") {
-            input message: 'Do you want to build the images ?', ok: 'Yes'
         }
         script {
           sh '''
@@ -49,13 +71,13 @@ pipeline {
     }
 
     stage('Docker Push image') { 
+      when {
+        expression { params.STAGE_TO_RUN == 'PUSH_IMAGES' }
+      }
       environment {
             DOCKER_PASS = credentials("DOCKER_HUB_PASS") // we retrieve docker password from secret text called docker_hub_pass saved on jenkins
         }
       steps {
-        timeout(time: 15, unit: "MINUTES") {
-            input message: 'Do you want to push the images ?', ok: 'Yes'
-        }
         script {
           sh '''
           docker login -u $DOCKER_ID -p $DOCKER_PASS
@@ -67,14 +89,13 @@ pipeline {
     }
 
     stage('Deployment in dev'){
+      when {
+        expression{ params.STAGE_TO_RUN == 'DEPLOY_DEV' }
+      }
       environment
       {
         KUBECONFIG = credentials("config") // we retrieve kubeconfig from secret file called config saved on jenkins
       }
-      steps {
-        timeout(time: 15, unit: "MINUTES") {
-            input message: 'Do you want to deploy in dev ?', ok: 'Yes'
-        }
         script {
           sh '''
           rm -Rf .kube
@@ -95,13 +116,13 @@ pipeline {
     }
 
     stage('Deployment in staging') {
+      when {
+        expression { params.STAGE_TO_RUN == 'DEPLOY_STAGING' }
+      }
       environment {
         KUBECONFIG = credentials("config") 
       }
-      steps {
-          timeout(time: 15, unit: "MINUTES") {
-            input message: 'Do you want to deploy to staging namespace ?', ok: 'Yes'
-        }
+
         script {
           sh '''
           rm -Rf .kube
@@ -118,15 +139,18 @@ pipeline {
     }
 
     stage('Deployment in prod'){
+      when {
+        expression { params. STAGE_TO_RUN == 'DEPLOY_PROD' }
+      }
       environment {
         KUBECONFIG = credentials("config") 
       }
       steps {
       // Create an Approval Button with a timeout of 15 minutes.
       // this requires a manual validation in order to deploy on production environment
-        timeout(time: 15, unit: "MINUTES") {
-            input message: 'Do you want to deploy in production ?', ok: 'Yes'
-        }
+        // timeout(time: 15, unit: "MINUTES") {
+        //     input message: 'Do you want to deploy in production ?', ok: 'Yes'
+        // }
         script {
           sh '''
           rm -Rf .kube
