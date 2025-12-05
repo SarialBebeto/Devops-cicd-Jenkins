@@ -79,7 +79,6 @@ pipeline {
           sleep 5
           kubectl get pods -n dev
           kubectl get svc -n dev
-          kubectl logs -f deploy/{{ include "fastapi-deployment.fullname" . }} -n dev
           '''
         }
       }
