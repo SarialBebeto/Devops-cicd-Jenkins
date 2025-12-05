@@ -68,7 +68,7 @@ pipeline {
           '''
         }
       }
-    }
+    
 
     stage('Docker Push image') { 
       when {
@@ -113,7 +113,7 @@ pipeline {
           '''
         }
       }
-    }
+    
 
     stage('Deployment in staging') {
       when {
