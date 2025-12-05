@@ -136,7 +136,6 @@ pipeline {
           '''
         }
       }
-    }
 
     stage('Deployment in prod'){
       when {
