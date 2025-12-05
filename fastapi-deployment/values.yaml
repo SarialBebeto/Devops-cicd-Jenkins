@@ -16,54 +16,26 @@ serviceAccount:
   name: ""
 
 podAnnotations: {}
-
 podLabels: {}
 
 podSecurityContext: {}
-
-
 securityContext: {}
 
 containerPort: 8000
+
 service:
   type: ClusterIP
   port: 8000
   targetPort: 8000
 
-
 ingress:
   enabled: true
   className: "traefik"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chart-example.local
       paths:
         - path: /
           pathType: Prefix
-  # tls: []
-
-httpRoute:
-  enabled: false
-  annotations: {}
-  parentRefs:
-  - name: gateway
-    sectionName: http
-
-  hostnames:
-  - chart-example.local
-
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /headers
-
-
-resources: {}
-
-
 
 livenessProbe:
   httpGet:
@@ -74,13 +46,6 @@ readinessProbe:
     path: /
     port: http
 
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-
 db:
   image:
     repository: postgres
@@ -90,19 +55,24 @@ db:
   user: fastapi_traefik
   password: fastapi_traefik
   database: fastapi_traefik
-  host: db
+
+  host: app-fastapi-deployment-db
+
   storage:
     size: 5Gi
     storageClassName: ""
+
   environment:
-    - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@app-fastapi-deployment-db:5432/fastapi_traefik
 
 volumes: []
-
 volumeMounts: []
+
 
 nodeSelector: {}
 
+
 tolerations: []
+
 
 affinity: {}

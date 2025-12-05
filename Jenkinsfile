@@ -75,7 +75,11 @@ pipeline {
           cp fastapi-deployment/values.yaml values.yml
           cat values.yml
           sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-          helm upgrade --install app fastapi-deployment --values=values.yml --namespace dev
+          helm upgrade --install app fastapi-deployment --values=values.yml --namespace dev --force
+          sleep 5
+          kubectl get pods -n dev
+          kubectl get svc -n dev
+          kubectl logs -f deploy/{{ include "fastapi-deployment.fullname" . }} -n dev
           '''
         }
       }
@@ -95,7 +99,7 @@ pipeline {
           cp fastapi-deployment/values.yaml values.yml
           cat values.yml
           sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-          helm upgrade --install app fastapi-deployment --values=values.yml --namespace staging
+          helm upgrade --install app fastapi-deployment --values=values.yml --namespace staging --force
           '''
         }
       }
